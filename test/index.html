@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="a11y-slider.css">
+</head>
+<body>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body > * {
+            flex: 1 0 auto;
+            width: 100%;
+        }
+
+        .slider {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider > * {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: skyblue;
+            color: #fff;
+            font-size: 50px;
+            flex: 1 0 auto;
+            border-left: 10px solid rebeccapurple;
+            border-right: 10px solid rebeccapurple;
+            height: 200px;
+            width: 100%;
+        }
+
+        .a11y-slider-active {
+            text-decoration: underline;
+        }
+
+        #s-1 > * {
+            width: 33.3333%;
+        }
+
+        #s-2 > * {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            #s-3 > * {
+                width: 33.333% !important;
+            }
+        }
+    </style>
+    <button id="test">Me</button>
+    <ul id="s-1" class="slider">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+    </ul>
+    <ul id="s-2" class="slider">
+        <li>1</li>
+        <li>2</li>
+    </ul>
+    <ul id="s-3" class="slider">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+    </ul>
+    <script src="a11y-slider.js"></script>
+    <script>
+        var slider1 = document.querySelector('#s-1');
+
+        var a11ySlider = new A11YSlider(slider1);
+        var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'));
+        var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'));
+
+        slider1.addEventListener('afterChange', function (e) {
+            console.log(e.detail.currentSlide);
+        });
+
+        document.querySelector('#test').addEventListener('click', function () {
+            a11ySlider.scrollToSlide(document.querySelector('#s-1 > *:nth-child(3)'));
+        })
+    </script>
+</body>
+</html>
