@@ -67,6 +67,10 @@
                 width: 33.333% !important;
             }
         }
+
+        .active {
+            color: red;
+        }
     </style>
     <button id="test">Me</button>
     <ul id="s-1" class="slider">
@@ -92,7 +96,18 @@
 
         var a11ySlider = new A11YSlider(slider1);
         var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'));
+
+        console.log(document.querySelector('#s-2 .a11y-slider-active'));
+
         var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'));
+
+        slider1.addEventListener('init', function (e) {
+            console.log('init event');
+        });
+
+        slider1.addEventListener('beforeChange', function (e) {
+            console.log('before');
+        });
 
         slider1.addEventListener('afterChange', function (e) {
             console.log(e.detail.currentSlide);

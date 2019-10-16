@@ -92,7 +92,7 @@ Fires after slider initialization
 
 Fires before slider changes slide
 
-### beforeChange
+### afterChange
 
 **Detail:** currentSlide, a11yslider
 

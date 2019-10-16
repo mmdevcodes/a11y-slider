@@ -5,10 +5,11 @@ import { createElement, a11yClick, crossCustomEvent } from './utils';
 import './index.css';
 
 interface Options {
+    container: Boolean,
     navBtns: Boolean,
     prevBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    dots: Boolean,
+    dots: Boolean
 }
 
 interface ActiveVisibleSlides {
@@ -28,11 +29,13 @@ enum SliderState {
 export default class A11YSlider {
     private activeClass: string;
     private visibleClass: string;
+    private dotsClass: string;
     private sliderClass: string;
     private hasCustomBtns: boolean;
     private _checkShouldEnableDebounced: any;
     public slider: HTMLElement;
     public slides: HTMLCollectionOf<HTMLElement>;
+    public dots: HTMLElement | null;
     public activeSlide: HTMLElement;
     public visibleSlides: HTMLElement[];
     public sliderContainer: HTMLElement;
@@ -45,12 +48,15 @@ export default class A11YSlider {
         this.sliderContainer = createElement('<div class="a11y-slider-container"></div>');
         this.activeClass = 'a11y-slider-active';
         this.visibleClass = 'a11y-slider-visible';
+        this.dotsClass = 'a11y-slider-dots';
         this.sliderClass = 'a11y-slider';
+        this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
         this.sliderEnabled = SliderState.Disabled;
         this.hasCustomBtns = options && options.prevBtn || options && options.nextBtn ? true : false;
         this.options = {
+            container: true,
             navBtns: true,
             prevBtn: options && options.prevBtn || createElement('<button class="a11y-slider-prev">Previous slide</button>'),
             nextBtn: options && options.nextBtn || createElement('<button class="a11y-slider-next">Next slide</button>'),
@@ -67,17 +73,19 @@ export default class A11YSlider {
         this._handleScroll = debounce(this._handleScroll.bind(this), 150); // May fire twice depending on browser
 
         // Initialize slider
-        this.init();
+        this._init();
     }
 
-    init() {
+    private _init() {
         // Check if the slider should be initialized depending on slides shown
         this._checkShouldEnable();
 
         // Enable/disable slider after resize
         window.addEventListener('resize', this._checkShouldEnableDebounced);
 
-        this._dispatchEvent('init', this);
+        this._dispatchEvent('init', {
+            a11ySlider: this
+        });
     }
 
     private _checkShouldEnable() {
@@ -104,34 +112,39 @@ export default class A11YSlider {
         // Set slider to enabled
         this.sliderEnabled = SliderState.Enabled;
 
-        // Add slider container to DOM and move slider into it
-        this.slider.insertAdjacentElement('beforebegin', this.sliderContainer);
-        this.sliderContainer.insertAdjacentElement('afterbegin', this.slider);
+        // Add slider container to DOM and move slider into it if enabled
+        if (this.options.container) {
+            this.slider.insertAdjacentElement('beforebegin', this.sliderContainer);
+            this.sliderContainer.insertAdjacentElement('afterbegin', this.slider);
+        }
 
         // If prev/next buttons are enabled and user isn't using their own add it to the DOM
         if (this.options.navBtns && !this.hasCustomBtns) {
             if (this.options.prevBtn instanceof HTMLElement) {
-                this.sliderContainer.insertAdjacentElement('afterbegin', this.options.prevBtn);
+                this.slider.insertAdjacentElement('beforebegin', this.options.prevBtn);
             }
 
             if (this.options.nextBtn instanceof HTMLElement) {
-                this.sliderContainer.insertAdjacentElement('afterbegin', this.options.nextBtn);
+                this.slider.insertAdjacentElement('beforebegin', this.options.nextBtn);
             }
         }
 
+        // TODO: Move add/removal of buttons into it's own function
         // Add event listeners for prev/next buttons. Possible for there to be multiple so need to loop through them all
         const prevBtns = this.options.prevBtn instanceof HTMLElement ? [this.options.prevBtn] : this.options.prevBtn;
         const nextBtns = this.options.nextBtn instanceof HTMLElement ? [this.options.nextBtn] : this.options.nextBtn;
 
         for (let prevBtn of prevBtns) {
-            prevBtn.addEventListener('click', this._handlePrev);
-            prevBtn.addEventListener('keypress', this._handlePrev);
+            prevBtn.addEventListener('click', this._handlePrev, { passive: true });
+            prevBtn.addEventListener('keypress', this._handlePrev, { passive: true });
         }
 
         for (let nextBtn of nextBtns) {
-            nextBtn.addEventListener('click', this._handleNext);
-            nextBtn.addEventListener('keypress', this._handleNext);
+            nextBtn.addEventListener('click', this._handleNext, { passive: true });
+            nextBtn.addEventListener('keypress', this._handleNext, { passive: true });
         }
+
+        if (this.options.dots) this._generateDots();
 
         // Add listener for when the slider stops moving
         this.slider.addEventListener('scroll', this._handleScroll, false);
@@ -150,19 +163,29 @@ export default class A11YSlider {
             this.sliderContainer.parentNode!.removeChild(this.sliderContainer);
         }
 
-        // Event listeners for prev/next buttons. Possible for there to be multiple so need to loop through them all
+        // Remove event listeners for prev/next buttons
+        // Possible for there to be multiple so need to loop through them all
         const prevBtns = this.options.prevBtn instanceof HTMLElement ? [this.options.prevBtn] : this.options.prevBtn;
         const nextBtns = this.options.nextBtn instanceof HTMLElement ? [this.options.nextBtn] : this.options.nextBtn;
 
         for (let prevBtn of prevBtns) {
             prevBtn.removeEventListener('click', this._handlePrev);
             prevBtn.removeEventListener('keypress', this._handlePrev);
+
+            // Only remove generated buttons, not user-defined ones
+            if (!this.hasCustomBtns) prevBtn.parentNode!.removeChild(prevBtn);
         }
 
         for (let nextBtn of nextBtns) {
             nextBtn.removeEventListener('click', this._handleNext);
             nextBtn.removeEventListener('keypress', this._handleNext);
+
+            // Only remove generated buttons, not user-defined ones
+            if (!this.hasCustomBtns) nextBtn.parentNode!.removeChild(nextBtn);
         }
+
+        // Will remove dots if they exist
+        this._removeDots();
 
         // Remove listener for when the slider stops moving
         this.slider.removeEventListener('scroll', this._handleScroll, false);
@@ -185,12 +208,16 @@ export default class A11YSlider {
             slide.classList.remove(this.visibleClass);
         }
 
-        // Add in active/visible classes
+        // Add in active classes
         this.activeSlide.classList.add(this.activeClass);
 
+        // Add in visible classes
         for (let slide of this.visibleSlides) {
             slide.classList.add(this.visibleClass);
         }
+
+        // Trigger dot update
+        this._updateDots(this.activeSlide);
     }
 
     // Remove all CSS needed for the slider. Should mirror _setCSS()
@@ -202,6 +229,52 @@ export default class A11YSlider {
         for (let slide of this.slides) {
             slide.classList.remove(this.activeClass);
             slide.classList.remove(this.visibleClass);
+        }
+    }
+
+    private _generateDots() {
+        this.dots = createElement(`<ul class="${this.dotsClass}"></ul>`);
+
+        for (let i = 0; i < this.slides.length; i++) {
+            const dotLi = createElement('<li></li>');
+            const dotBtn = createElement('<button type="button"></button>');
+
+            // Add text
+            dotBtn.textContent = `Move slider to item #${i + 1}`;
+
+            // Event handlers to switch to slide
+            const switchToSlide = (event: Event) => {
+                if (a11yClick(event) === true) this.scrollToSlide(this.slides[i]);
+            }
+
+            // Add event listeners
+            dotBtn.addEventListener('click', switchToSlide, { passive: true });
+            dotBtn.addEventListener('keypress', switchToSlide, { passive: true });
+
+            // Append to UL
+            dotLi.insertAdjacentElement('beforeend', dotBtn);
+            this.dots.insertAdjacentElement('beforeend', dotLi);
+
+        }
+
+        this.slider.insertAdjacentElement('afterend', this.dots);
+    }
+
+    private _removeDots() {
+        if (this.dots instanceof HTMLElement) {
+            this.dots.parentNode!.removeChild(this.dots);
+        }
+    }
+
+    private _updateDots(activeSlide: HTMLElement) {
+        if (this.dots instanceof HTMLElement) {
+            const activeIndex = Array.prototype.indexOf.call(activeSlide.parentNode!.children, activeSlide);
+
+            // Reset children active class if exist
+            for (let dot of this.dots.children) dot.querySelector('button')!.classList.remove('active');
+
+            // Add class to active dot
+            this.dots.children[activeIndex].querySelector('button')!.classList.add('active');
         }
     }
 
@@ -249,6 +322,9 @@ export default class A11YSlider {
         } else {
             this.slider.scrollLeft = targetSlide.offsetLeft;
         }
+
+        // Trigger dot update
+        this._updateDots(targetSlide);
     }
 
     private _getActiveAndVisible(callback?: ActiveVisibleSlides) {
