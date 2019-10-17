@@ -5,11 +5,12 @@ import { createElement, a11yClick, crossCustomEvent } from './utils';
 import './index.css';
 
 interface Options {
-    container: Boolean,
-    navBtns: Boolean,
+    container: boolean,
+    navBtns: boolean,
     prevBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    dots: Boolean
+    dots: boolean,
+    adaptiveHeight: boolean
 }
 
 interface ActiveVisibleSlides {
@@ -60,7 +61,8 @@ export default class A11YSlider {
             navBtns: true,
             prevBtn: options && options.prevBtn || createElement('<button class="a11y-slider-prev">Previous slide</button>'),
             nextBtn: options && options.nextBtn || createElement('<button class="a11y-slider-next">Next slide</button>'),
-            dots: true
+            dots: true,
+            adaptiveHeight: false
         };
 
         // Set user-inputted options if available
@@ -151,6 +153,9 @@ export default class A11YSlider {
 
         // Add all CSS needed
         this._setCSS();
+
+        // Update slider's height based on content of slide
+        if (this.options.adaptiveHeight === true) this._updateHeight(this.activeSlide);
     }
 
     // Disable all functionality for the slider. Should mirror _enableSlider()
@@ -192,6 +197,9 @@ export default class A11YSlider {
 
         // Remove all CSS
         this._removeCSS();
+
+        // Remove slider's height if set
+        if (this.options.adaptiveHeight === true) this._updateHeight(false);
     }
 
     // Add all CSS needed for the slider. Should mirror _removeCSS()
@@ -313,6 +321,9 @@ export default class A11YSlider {
             a11ySlider: this
         });
 
+        // Update slider's height based on content of slide
+        if (this.options.adaptiveHeight === true) this._updateHeight(targetSlide);
+
         // Move slider to specific item
         if (modernBrowser) {
             this.slider.scroll({
@@ -325,6 +336,19 @@ export default class A11YSlider {
 
         // Trigger dot update
         this._updateDots(targetSlide);
+    }
+
+    /**
+     * If element is passed slider's height will match
+     *  it otherwise the height of the slider is removed.
+     */
+    private _updateHeight(target: HTMLElement | false) {
+        if (target instanceof HTMLElement) {
+            const targetHeight = target.offsetHeight;
+            this.slider.style.height = `${targetHeight}px`;
+        } else {
+            this.slider.style.height = '';
+        }
     }
 
     private _getActiveAndVisible(callback?: ActiveVisibleSlides) {

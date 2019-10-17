@@ -34,6 +34,7 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
+            transition: height .3s ease-in-out;
         }
 
         .slider > * {
@@ -62,6 +63,10 @@
             width: 100%;
         }
 
+        #s-2 *:nth-child(odd) {
+            height: 100px;
+        }
+
         @media (min-width: 768px) {
             #s-3 > * {
                 width: 33.333% !important;
@@ -84,6 +89,9 @@
     <ul id="s-2" class="slider">
         <li>1</li>
         <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
     </ul>
     <ul id="s-3" class="slider">
         <li>1</li>
@@ -95,7 +103,9 @@
         var slider1 = document.querySelector('#s-1');
 
         var a11ySlider = new A11YSlider(slider1);
-        var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'));
+        var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
+            adaptiveHeight: true
+        });
 
         console.log(document.querySelector('#s-2 .a11y-slider-active'));
 

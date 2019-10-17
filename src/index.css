@@ -3,6 +3,7 @@
 }
 
 .a11y-slider {
+    position: relative;
     overflow-x: scroll;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
