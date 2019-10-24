@@ -34,6 +34,8 @@ export default class A11YSlider {
     private sliderClass: string;
     private hasCustomBtns: boolean;
     private _checkShouldEnableDebounced: any;
+    private _updateHeightDebounced: any;
+    private _updateScrollPosition: any;
     public slider: HTMLElement;
     public slides: HTMLCollectionOf<HTMLElement>;
     public dots: HTMLElement | null;
@@ -72,6 +74,8 @@ export default class A11YSlider {
         this._handlePrev = this._handlePrev.bind(this);
         this._handleNext = this._handleNext.bind(this);
         this._checkShouldEnableDebounced = debounce(this._checkShouldEnable.bind(this), 250);
+        this._updateHeightDebounced = debounce(this._updateHeight.bind(this), 250);
+        this._updateScrollPosition = debounce(() => this.scrollToSlide(this.activeSlide), 250);
         this._handleScroll = debounce(this._handleScroll.bind(this), 150); // May fire twice depending on browser
 
         // Initialize slider
@@ -146,6 +150,7 @@ export default class A11YSlider {
             nextBtn.addEventListener('keypress', this._handleNext, { passive: true });
         }
 
+        // Add dot navigation if enabled
         if (this.options.dots) this._generateDots();
 
         // Add listener for when the slider stops moving
@@ -154,8 +159,17 @@ export default class A11YSlider {
         // Add all CSS needed
         this._setCSS();
 
-        // Update slider's height based on content of slide
-        if (this.options.adaptiveHeight === true) this._updateHeight(this.activeSlide);
+        // Adaptive height
+        if (this.options.adaptiveHeight === true) {
+            // Update slider's height based on content of slide
+            this._updateHeight(this.activeSlide);
+
+            // Also add resize listener for it
+            window.addEventListener('resize', this._updateHeightDebounced.bind);
+        }
+
+        // On resize make sure to update scroll position as content may change in width/height
+        window.addEventListener('resize', this._updateScrollPosition);
     }
 
     // Disable all functionality for the slider. Should mirror _enableSlider()
@@ -198,8 +212,12 @@ export default class A11YSlider {
         // Remove all CSS
         this._removeCSS();
 
-        // Remove slider's height if set
-        if (this.options.adaptiveHeight === true) this._updateHeight(false);
+        // Remove all adaptive height functionality
+        this._updateHeight(false);
+        window.removeEventListener('resize', this._updateHeightDebounced);
+
+        // Remove scroll position update check
+        window.removeEventListener('resize', this._updateScrollPosition);
     }
 
     // Add all CSS needed for the slider. Should mirror _removeCSS()

@@ -77,7 +77,6 @@
             color: red;
         }
     </style>
-    <button id="test">Me</button>
     <ul id="s-1" class="slider">
         <li>1</li>
         <li>2</li>
@@ -107,8 +106,6 @@
             adaptiveHeight: true
         });
 
-        console.log(document.querySelector('#s-2 .a11y-slider-active'));
-
         var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'));
 
         slider1.addEventListener('init', function (e) {
@@ -122,10 +119,6 @@
         slider1.addEventListener('afterChange', function (e) {
             console.log(e.detail.currentSlide);
         });
-
-        document.querySelector('#test').addEventListener('click', function () {
-            a11ySlider.scrollToSlide(document.querySelector('#s-1 > *:nth-child(3)'));
-        })
     </script>
 </body>
 </html>

@@ -20,6 +20,8 @@ export default class A11YSlider {
     private sliderClass;
     private hasCustomBtns;
     private _checkShouldEnableDebounced;
+    private _updateHeightDebounced;
+    private _updateScrollPosition;
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
