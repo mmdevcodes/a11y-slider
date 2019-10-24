@@ -44,14 +44,16 @@ The default `options` are:
 
 ```js
 {
+  container: true,
   navBtns: true,
   prevBtn: HTMLElement,
   nextBtn: HTMLElement,
-  dots: true
+  dots: true,
+  adaptiveHeight: false
 }
 ```
 
-`prevBtn` and `nextBtn` can one or more HTML elements. For example via querySelector or querySelectorAll. If not supplied it will generate buttons if `navBtns` is true.
+`prevBtn` and `nextBtn` can one or several HTML elements. For example via querySelector or querySelectorAll. If not supplied it will generate buttons if `navBtns` is true.
 
 ## Methods
 
@@ -60,17 +62,10 @@ The default `options` are:
 slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
 ```
 
-### scrollToSlide
-
-**Arguments:** Element
-
-Scrolls slider to specified element
-
-### Destroy
-
-**Arguments:** None
-
-Removes everything that the A11YSlider created in the DOM.
+| Method        	| Arguments                           	| Description                                               	|
+|---------------	|-------------------------------------	|-----------------------------------------------------------	|
+| scrollToSlide 	| Element                             	| Scrolls slider to specified element                       	|
+| destroy       	| currentSlide, nextSlide, a11yslider 	| Removes everything that the A11YSlider created in the DOM 	|
 
 ## Events
 ```js
@@ -80,29 +75,14 @@ slider.addEventListener('afterChange', function (e) {
 });
 ```
 
-### init
+Events must be called before initializing the slider!
 
-**Detail:** a11yslider
-
-Fires after slider initialization
-
-### beforeChange
-
-**Detail:** currentSlide, nextSlide, a11yslider
-
-Fires before slider changes slide
-
-### afterChange
-
-**Detail:** currentSlide, a11yslider
-
-Fires after slider changes slide
-
-### destroy
-
-**Detail:** a11yslider
-
-Fires after the slider is destroyed
+| Event        	| Detail                              	| Description                         	|
+|--------------	|-------------------------------------	|-------------------------------------	|
+| init         	| a11yslider                          	| Fires after slider initialization   	|
+| beforeChange 	| currentSlide, nextSlide, a11yslider 	| Fires before slide change           	|
+| afterChange  	| currentSlide, a11yslider            	| Fires after slide change            	|
+| destroy      	| a11yslider                          	| Fires after the slider is destroyed 	|
 
 ## Browser support
 
@@ -110,8 +90,8 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 
 ## Notes
 
-- Non-modern browsers that doesn't support [ScrollToOptions](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) will not have smooth scrolling when switching slides. Using a polyfill like [smoothscroll](https://github.com/iamdustan/smoothscroll) may work. Haven't tested yet
+- Non-modern browsers that doesn't support [ScrollToOptions](https://developer.mozilla.org/en-US/docs/Web/API/ScrollToOptions) will not have smooth scrolling when switching slides. A polyfill like [smoothscroll](https://github.com/iamdustan/smoothscroll) can be used to fix this.
 
 #### Todo
 
-- A lot
+- `items` option

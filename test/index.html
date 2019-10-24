@@ -77,6 +77,7 @@
             color: red;
         }
     </style>
+    <button id="test">Me</button>
     <ul id="s-1" class="slider">
         <li>1</li>
         <li>2</li>
@@ -101,13 +102,6 @@
     <script>
         var slider1 = document.querySelector('#s-1');
 
-        var a11ySlider = new A11YSlider(slider1);
-        var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
-            adaptiveHeight: true
-        });
-
-        var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'));
-
         slider1.addEventListener('init', function (e) {
             console.log('init event');
         });
@@ -119,6 +113,13 @@
         slider1.addEventListener('afterChange', function (e) {
             console.log(e.detail.currentSlide);
         });
+
+        var a11ySlider = new A11YSlider(slider1);
+        var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
+            adaptiveHeight: true
+        });
+
+        var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'));
     </script>
 </body>
 </html>
