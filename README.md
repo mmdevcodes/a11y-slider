@@ -95,3 +95,5 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 #### Todo
 
 - `items` option
+- Look into reducing size of bundle
+- Add skip link

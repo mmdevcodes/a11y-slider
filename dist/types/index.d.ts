@@ -19,6 +19,7 @@ export default class A11YSlider {
     private dotsClass;
     private sliderClass;
     private hasCustomBtns;
+    private focusable;
     private _checkShouldEnableDebounced;
     private _updateHeightDebounced;
     private _updateScrollPosition;
@@ -37,6 +38,8 @@ export default class A11YSlider {
     private _disableSlider;
     private _setCSS;
     private _removeCSS;
+    private _addA11Y;
+    private _removeA11Y;
     private _generateDots;
     private _removeDots;
     private _updateDots;

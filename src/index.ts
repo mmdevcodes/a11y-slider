@@ -33,6 +33,7 @@ export default class A11YSlider {
     private dotsClass: string;
     private sliderClass: string;
     private hasCustomBtns: boolean;
+    private focusable: string;
     private _checkShouldEnableDebounced: any;
     private _updateHeightDebounced: any;
     private _updateScrollPosition: any;
@@ -53,6 +54,7 @@ export default class A11YSlider {
         this.visibleClass = 'a11y-slider-visible';
         this.dotsClass = 'a11y-slider-dots';
         this.sliderClass = 'a11y-slider';
+        this.focusable = 'a, area, input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]';
         this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
@@ -244,6 +246,9 @@ export default class A11YSlider {
 
         // Trigger dot update
         this._updateDots(this.activeSlide);
+
+        // Update all a11y functionality
+        this._addA11Y();
     }
 
     // Remove all CSS needed for the slider. Should mirror _setCSS()
@@ -255,6 +260,47 @@ export default class A11YSlider {
         for (let slide of this.slides) {
             slide.classList.remove(this.activeClass);
             slide.classList.remove(this.visibleClass);
+        }
+
+        // Remove all a11y functionality
+        this._removeA11Y();
+    }
+
+    // Makes only the visible items focusable and readable by screenreaders. Should mirror _removeA11Y()
+    private _addA11Y() {
+        // Reset all a11y functionality to default beforehand
+        this._removeA11Y();
+
+        for (let slide of this.slides) {
+            const focusableItems = slide.querySelectorAll(this.focusable);
+
+            // If slide is not visible make the slide wrapper not focusable
+            if (!slide.classList.contains(this.visibleClass)) {
+                slide.setAttribute('tabindex', '-1');
+                slide.setAttribute('aria-hidden', 'true');
+            }
+
+            for (let focusableItem of focusableItems) {
+                if (!slide.classList.contains(this.visibleClass)) {
+                    focusableItem.setAttribute('tabindex', '-1');
+                }
+            }
+        }
+    }
+
+    // Reset a11y attributes for slide wrapper. Should mirror _addA11Y()
+    private _removeA11Y() {
+        for (let slide of this.slides) {
+            const focusableItems = slide.querySelectorAll(this.focusable);
+
+            // Remove a11y for each slide wrapper
+            slide.removeAttribute('tabindex');
+            slide.removeAttribute('aria-hidden');
+
+            // Reset a11y attributes for slide inner elements
+            for (let focusableItem of focusableItems) {
+                focusableItem.removeAttribute('tabindex');
+            }
         }
     }
 
