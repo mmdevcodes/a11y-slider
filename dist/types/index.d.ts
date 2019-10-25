@@ -8,18 +8,19 @@ interface Options {
     nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
     dots: boolean;
     adaptiveHeight: boolean;
+    skipBtn: boolean;
 }
 declare enum SliderState {
     Enabled = 0,
     Disabled = 1
 }
 export default class A11YSlider {
-    private activeClass;
-    private visibleClass;
-    private dotsClass;
-    private sliderClass;
-    private hasCustomBtns;
-    private focusable;
+    private _activeClass;
+    private _visibleClass;
+    private _dotsClass;
+    private _sliderClass;
+    private _hasCustomBtns;
+    private _focusable;
     private _checkShouldEnableDebounced;
     private _updateHeightDebounced;
     private _updateScrollPosition;
@@ -38,8 +39,10 @@ export default class A11YSlider {
     private _disableSlider;
     private _setCSS;
     private _removeCSS;
-    private _addA11Y;
-    private _removeA11Y;
+    private _addFocusable;
+    private _removeFocusable;
+    private _addSkipBtn;
+    private _removeSkipBtn;
     private _generateDots;
     private _removeDots;
     private _updateDots;

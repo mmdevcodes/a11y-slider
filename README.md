@@ -49,7 +49,8 @@ The default `options` are:
   prevBtn: HTMLElement,
   nextBtn: HTMLElement,
   dots: true,
-  adaptiveHeight: false
+  adaptiveHeight: false,
+  skipBtn: true
 }
 ```
 
@@ -96,5 +97,4 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 
 - `items` option
 - Examples
-- Add skip link
 - Look into reducing size of bundle

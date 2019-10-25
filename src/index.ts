@@ -11,7 +11,7 @@ interface Options {
     nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     dots: boolean,
     adaptiveHeight: boolean,
-    skipLink: boolean
+    skipBtn: boolean
 }
 
 interface ActiveVisibleSlides {
@@ -68,7 +68,7 @@ export default class A11YSlider {
             nextBtn: options && options.nextBtn || createElement('<button class="a11y-slider-next">Next slide</button>'),
             dots: true,
             adaptiveHeight: false,
-            skipLink: true
+            skipBtn: true
         };
 
         // Set user-inputted options if available
@@ -128,6 +128,9 @@ export default class A11YSlider {
             this.sliderContainer.insertAdjacentElement('afterbegin', this.slider);
         }
 
+        // Add skip button before slider if enabled
+        if (this.options.skipBtn) this._addSkipBtn();
+
         // If prev/next buttons are enabled and user isn't using their own add it to the DOM
         if (this.options.navBtns && !this._hasCustomBtns) {
             if (this.options.prevBtn instanceof HTMLElement) {
@@ -185,6 +188,9 @@ export default class A11YSlider {
             this.sliderContainer.insertAdjacentElement('beforebegin', this.slider);
             this.sliderContainer.parentNode!.removeChild(this.sliderContainer);
         }
+
+        // Remove skip button
+        this._removeSkipBtn();
 
         // Remove event listeners for prev/next buttons
         // Possible for there to be multiple so need to loop through them all
@@ -250,7 +256,7 @@ export default class A11YSlider {
         this._updateDots(this.activeSlide);
 
         // Update all a11y functionality
-        this._addA11Y();
+        this._addFocusable();
     }
 
     // Remove all CSS needed for the slider. Should mirror _setCSS()
@@ -265,13 +271,13 @@ export default class A11YSlider {
         }
 
         // Remove all a11y functionality
-        this._removeA11Y();
+        this._removeFocusable();
     }
 
     // Makes only the visible items focusable and readable by screenreaders. Should mirror _removeA11Y()
-    private _addA11Y() {
+    private _addFocusable() {
         // Reset all a11y functionality to default beforehand
-        this._removeA11Y();
+        this._removeFocusable();
 
         for (let slide of this.slides) {
             const focusableItems = slide.querySelectorAll(this._focusable);
@@ -291,7 +297,7 @@ export default class A11YSlider {
     }
 
     // Reset a11y attributes for slide wrapper. Should mirror _addA11Y()
-    private _removeA11Y() {
+    private _removeFocusable() {
         for (let slide of this.slides) {
             const focusableItems = slide.querySelectorAll(this._focusable);
 
@@ -302,6 +308,34 @@ export default class A11YSlider {
             // Reset a11y attributes for slide inner elements
             for (let focusableItem of focusableItems) {
                 focusableItem.removeAttribute('tabindex');
+            }
+        }
+    }
+
+    private _addSkipBtn() {
+        const beforeEl = createElement(`<button class="a11y-slider-sr-only" type="button" tabindex="0">Click to skip slider carousel</button>`);
+        const afterEl = createElement(`<div class="a11y-slider-sr-only" tabindex="-1">End of slider carousel</div>`);
+
+        // Event handler to go to end
+        const focusEnd = (event: Event) => {
+            if (a11yClick(event) === true) afterEl.focus();
+        }
+
+        // Add event listeners
+        beforeEl.addEventListener('click', focusEnd, { passive: true });
+        beforeEl.addEventListener('keypress', focusEnd, { passive: true });
+
+        // Add to DOM
+        this.slider.insertAdjacentElement('beforebegin', beforeEl);
+        this.slider.insertAdjacentElement('afterend', afterEl);
+    }
+
+    private _removeSkipBtn() {
+        const skipElements = document.querySelectorAll('a11y-slider-sr-only');
+
+        for (let skipElement of skipElements) {
+            if (skipElement instanceof HTMLElement) {
+                skipElement.parentNode!.removeChild(skipElement);
             }
         }
     }
@@ -331,6 +365,7 @@ export default class A11YSlider {
 
         }
 
+        // Add dots UL to DOM
         this.slider.insertAdjacentElement('afterend', this.dots);
     }
 
