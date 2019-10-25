@@ -10,7 +10,8 @@ interface Options {
     prevBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     dots: boolean,
-    adaptiveHeight: boolean
+    adaptiveHeight: boolean,
+    skipLink: boolean
 }
 
 interface ActiveVisibleSlides {
@@ -28,12 +29,12 @@ enum SliderState {
 }
 
 export default class A11YSlider {
-    private activeClass: string;
-    private visibleClass: string;
-    private dotsClass: string;
-    private sliderClass: string;
-    private hasCustomBtns: boolean;
-    private focusable: string;
+    private _activeClass: string;
+    private _visibleClass: string;
+    private _dotsClass: string;
+    private _sliderClass: string;
+    private _hasCustomBtns: boolean;
+    private _focusable: string;
     private _checkShouldEnableDebounced: any;
     private _updateHeightDebounced: any;
     private _updateScrollPosition: any;
@@ -50,23 +51,24 @@ export default class A11YSlider {
         this.slider = element;
         this.slides = element.children as HTMLCollectionOf<HTMLElement>;
         this.sliderContainer = createElement('<div class="a11y-slider-container"></div>');
-        this.activeClass = 'a11y-slider-active';
-        this.visibleClass = 'a11y-slider-visible';
-        this.dotsClass = 'a11y-slider-dots';
-        this.sliderClass = 'a11y-slider';
-        this.focusable = 'a, area, input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]';
+        this._activeClass = 'a11y-slider-active';
+        this._visibleClass = 'a11y-slider-visible';
+        this._dotsClass = 'a11y-slider-dots';
+        this._sliderClass = 'a11y-slider';
+        this._focusable = 'a, area, input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]';
         this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
         this.sliderEnabled = SliderState.Disabled;
-        this.hasCustomBtns = options && options.prevBtn || options && options.nextBtn ? true : false;
+        this._hasCustomBtns = options && options.prevBtn || options && options.nextBtn ? true : false;
         this.options = {
             container: true,
             navBtns: true,
             prevBtn: options && options.prevBtn || createElement('<button class="a11y-slider-prev">Previous slide</button>'),
             nextBtn: options && options.nextBtn || createElement('<button class="a11y-slider-next">Next slide</button>'),
             dots: true,
-            adaptiveHeight: false
+            adaptiveHeight: false,
+            skipLink: true
         };
 
         // Set user-inputted options if available
@@ -127,7 +129,7 @@ export default class A11YSlider {
         }
 
         // If prev/next buttons are enabled and user isn't using their own add it to the DOM
-        if (this.options.navBtns && !this.hasCustomBtns) {
+        if (this.options.navBtns && !this._hasCustomBtns) {
             if (this.options.prevBtn instanceof HTMLElement) {
                 this.slider.insertAdjacentElement('beforebegin', this.options.prevBtn);
             }
@@ -194,7 +196,7 @@ export default class A11YSlider {
             prevBtn.removeEventListener('keypress', this._handlePrev);
 
             // Only remove generated buttons, not user-defined ones
-            if (!this.hasCustomBtns) prevBtn.parentNode!.removeChild(prevBtn);
+            if (!this._hasCustomBtns) prevBtn.parentNode!.removeChild(prevBtn);
         }
 
         for (let nextBtn of nextBtns) {
@@ -202,7 +204,7 @@ export default class A11YSlider {
             nextBtn.removeEventListener('keypress', this._handleNext);
 
             // Only remove generated buttons, not user-defined ones
-            if (!this.hasCustomBtns) nextBtn.parentNode!.removeChild(nextBtn);
+            if (!this._hasCustomBtns) nextBtn.parentNode!.removeChild(nextBtn);
         }
 
         // Will remove dots if they exist
@@ -228,20 +230,20 @@ export default class A11YSlider {
         this._getActiveAndVisible();
 
         // Add main slider class if it doesn't have it already
-        this.slider.classList.add(this.sliderClass);
+        this.slider.classList.add(this._sliderClass);
 
         // Reset the more dynamic CSS first if it exists
         for (let slide of this.slides) {
-            slide.classList.remove(this.activeClass);
-            slide.classList.remove(this.visibleClass);
+            slide.classList.remove(this._activeClass);
+            slide.classList.remove(this._visibleClass);
         }
 
         // Add in active classes
-        this.activeSlide.classList.add(this.activeClass);
+        this.activeSlide.classList.add(this._activeClass);
 
         // Add in visible classes
         for (let slide of this.visibleSlides) {
-            slide.classList.add(this.visibleClass);
+            slide.classList.add(this._visibleClass);
         }
 
         // Trigger dot update
@@ -254,12 +256,12 @@ export default class A11YSlider {
     // Remove all CSS needed for the slider. Should mirror _setCSS()
     private _removeCSS() {
         // Remove class to slider
-        this.slider.classList.remove(this.sliderClass);
+        this.slider.classList.remove(this._sliderClass);
 
         // Reset all the dynamic classes
         for (let slide of this.slides) {
-            slide.classList.remove(this.activeClass);
-            slide.classList.remove(this.visibleClass);
+            slide.classList.remove(this._activeClass);
+            slide.classList.remove(this._visibleClass);
         }
 
         // Remove all a11y functionality
@@ -272,16 +274,16 @@ export default class A11YSlider {
         this._removeA11Y();
 
         for (let slide of this.slides) {
-            const focusableItems = slide.querySelectorAll(this.focusable);
+            const focusableItems = slide.querySelectorAll(this._focusable);
 
             // If slide is not visible make the slide wrapper not focusable
-            if (!slide.classList.contains(this.visibleClass)) {
+            if (!slide.classList.contains(this._visibleClass)) {
                 slide.setAttribute('tabindex', '-1');
                 slide.setAttribute('aria-hidden', 'true');
             }
 
             for (let focusableItem of focusableItems) {
-                if (!slide.classList.contains(this.visibleClass)) {
+                if (!slide.classList.contains(this._visibleClass)) {
                     focusableItem.setAttribute('tabindex', '-1');
                 }
             }
@@ -291,7 +293,7 @@ export default class A11YSlider {
     // Reset a11y attributes for slide wrapper. Should mirror _addA11Y()
     private _removeA11Y() {
         for (let slide of this.slides) {
-            const focusableItems = slide.querySelectorAll(this.focusable);
+            const focusableItems = slide.querySelectorAll(this._focusable);
 
             // Remove a11y for each slide wrapper
             slide.removeAttribute('tabindex');
@@ -305,7 +307,7 @@ export default class A11YSlider {
     }
 
     private _generateDots() {
-        this.dots = createElement(`<ul class="${this.dotsClass}"></ul>`);
+        this.dots = createElement(`<ul class="${this._dotsClass}"></ul>`);
 
         for (let i = 0; i < this.slides.length; i++) {
             const dotLi = createElement('<li></li>');
