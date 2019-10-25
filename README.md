@@ -28,7 +28,7 @@ The CSS is small enough to copy directly into your project's main stylesheet if 
 `A11YSlider(element, options)`
 
 ```js
-import A11ySlider from 'a11y-slider';
+import A11YSlider from 'a11y-slider';
 
 // options parameter is optional
 const slider = new A11YSlider(document.querySelector('.slider'), options);
