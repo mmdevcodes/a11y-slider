@@ -99,3 +99,4 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 - Examples
 - Look into reducing size of bundle
 - Fix _removeSkipBtn() to not be global
+- Add refresh height method
