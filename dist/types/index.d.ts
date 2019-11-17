@@ -9,6 +9,7 @@ interface Options {
     dots: boolean;
     adaptiveHeight: boolean;
     skipBtn: boolean;
+    items: number | false;
 }
 declare enum SliderState {
     Enabled = 0,
@@ -39,6 +40,8 @@ export default class A11YSlider {
     private _disableSlider;
     private _setCSS;
     private _removeCSS;
+    private _updateItemsCSS;
+    private _removeItemsCSS;
     private _addFocusable;
     private _removeFocusable;
     private _addSkipBtn;
