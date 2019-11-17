@@ -1,5 +1,5 @@
-import 'core-js/es/object/assign';
 import 'core-js/es/symbol/iterator';
+import 'core-js/es/object/assign';
 import './index.css';
 interface Options {
     container: boolean;
@@ -50,12 +50,20 @@ export default class A11YSlider {
     private _removeDots;
     private _updateDots;
     private _goPrevOrNext;
+    /**
+     * Moves slider to target element
+     */
     scrollToSlide(targetSlide: HTMLElement): void;
+    /**
+     * Update the options on the slider instance
+     */
+    updateOptions(options: Options): void;
     /**
      * If element is passed slider's height will match
      *  it otherwise the height of the slider is removed.
      */
     private _updateHeight;
+    refreshHeight(): void;
     private _getActiveAndVisible;
     private _handlePrev;
     private _handleNext;

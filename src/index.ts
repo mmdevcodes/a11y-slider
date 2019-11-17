@@ -1,5 +1,5 @@
-import 'core-js/es/object/assign';
 import 'core-js/es/symbol/iterator';
+import 'core-js/es/object/assign';
 import { debounce } from 'ts-debounce';
 import { createElement, a11yClick, crossCustomEvent, isInteger } from './utils';
 import './index.css';
@@ -177,7 +177,7 @@ export default class A11YSlider {
             this._updateHeight(this.activeSlide);
 
             // Also add resize listener for it
-            window.addEventListener('resize', this._updateHeightDebounced.bind);
+            window.addEventListener('resize', this._updateHeightDebounced.bind(this));
         }
 
         // On resize make sure to update scroll position as content may change in width/height
@@ -191,7 +191,7 @@ export default class A11YSlider {
         // Remove slider from a11y-slider's container and then remove container from DOM
         if (document.body.contains(this.sliderContainer)) {
             this.sliderContainer.insertAdjacentElement('beforebegin', this.slider);
-            this.sliderContainer.parentNode!.removeChild(this.sliderContainer);
+            this.sliderContainer.parentNode && this.sliderContainer.parentNode.removeChild(this.sliderContainer);
         }
 
         // Remove skip button
@@ -207,7 +207,7 @@ export default class A11YSlider {
             prevBtn.removeEventListener('keypress', this._handlePrev);
 
             // Only remove generated buttons, not user-defined ones
-            if (!this._hasCustomBtns) prevBtn.parentNode!.removeChild(prevBtn);
+            if (!this._hasCustomBtns) prevBtn.parentNode && prevBtn.parentNode.removeChild(prevBtn);
         }
 
         for (let nextBtn of nextBtns) {
@@ -215,7 +215,7 @@ export default class A11YSlider {
             nextBtn.removeEventListener('keypress', this._handleNext);
 
             // Only remove generated buttons, not user-defined ones
-            if (!this._hasCustomBtns) nextBtn.parentNode!.removeChild(nextBtn);
+            if (!this._hasCustomBtns) nextBtn.parentNode && nextBtn.parentNode.removeChild(nextBtn);
         }
 
         // Will remove dots if they exist
@@ -377,7 +377,7 @@ export default class A11YSlider {
 
         for (let skipElement of skipElements) {
             if (skipElement instanceof HTMLElement) {
-                skipElement.parentNode!.removeChild(skipElement);
+                skipElement.parentNode && skipElement.parentNode.removeChild(skipElement);
             }
         }
     }
@@ -413,13 +413,13 @@ export default class A11YSlider {
 
     private _removeDots() {
         if (this.dots instanceof HTMLElement) {
-            this.dots.parentNode!.removeChild(this.dots);
+            this.dots.parentNode && this.dots.parentNode.removeChild(this.dots);
         }
     }
 
     private _updateDots(activeSlide: HTMLElement) {
         if (this.dots instanceof HTMLElement) {
-            const activeIndex = Array.prototype.indexOf.call(activeSlide.parentNode!.children, activeSlide);
+            const activeIndex = Array.prototype.indexOf.call(activeSlide.parentNode && activeSlide.parentNode.children, activeSlide);
 
             // Reset children active class if exist
             for (let dot of this.dots.children) dot.querySelector('button')!.classList.remove('active');
@@ -441,19 +441,22 @@ export default class A11YSlider {
                 if (lastVisibleSlide === lastSlide) {
                     this.scrollToSlide(firstSlide);
                 } else {
-                    this.scrollToSlide(activeSlide!.nextElementSibling as HTMLElement);
+                    this.scrollToSlide(activeSlide && activeSlide.nextElementSibling as HTMLElement);
                 }
             } else if (direction === SlideDirection.Prev) {
                 // Wrap to the last slide if we're currently on the first
                 if (firstVisibleSlide === firstSlide) {
                     this.scrollToSlide(lastSlide);
                 } else {
-                    this.scrollToSlide(activeSlide!.previousElementSibling as HTMLElement);
+                    this.scrollToSlide(activeSlide && activeSlide.previousElementSibling as HTMLElement);
                 }
             }
         });
     }
 
+    /**
+     * Moves slider to target element
+     */
     public scrollToSlide(targetSlide: HTMLElement) {
         const modernBrowser: boolean = !!HTMLElement.prototype.scrollTo;
 
@@ -482,6 +485,18 @@ export default class A11YSlider {
     }
 
     /**
+     * Update the options on the slider instance
+     */
+    public updateOptions(options: Options) {
+        // Assign new options
+        Object.assign(this.options, options);
+
+        // Re-run the initial enable slider option
+        this._disableSlider();
+        this._checkShouldEnable();
+    }
+
+    /**
      * If element is passed slider's height will match
      *  it otherwise the height of the slider is removed.
      */
@@ -492,6 +507,10 @@ export default class A11YSlider {
         } else {
             this.slider.style.height = '';
         }
+    }
+
+    public refreshHeight() {
+        this._updateHeight(this.activeSlide);
     }
 
     private _getActiveAndVisible(callback?: ActiveVisibleSlides) {

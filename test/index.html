@@ -64,17 +64,21 @@
         }
 
         #s-2 *:nth-child(odd) {
-            height: 100px;
+            height: 50px;
+        }
+
+        .active {
+            color: red;
         }
 
         @media (min-width: 768px) {
             #s-4 > * {
                 width: 33.333% !important;
             }
-        }
 
-        .active {
-            color: red;
+            #s-2 *:nth-child(odd) {
+                height: 100px;
+            }
         }
     </style>
     <ul id="s-1" class="slider">

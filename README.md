@@ -40,16 +40,16 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 
 ## Options
 
-| Option         	| Type             	| Description                                                                                                                                                                               	|
-|----------------	|------------------	|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|
-| container      	| Boolean          	| Default: `true` <br>Adds a container element around the slider                                                                                                                            	|
-| navBtns        	| Boolean          	| Default: `true` <br>Enables prev/next button                                                                                                                                              	|
-| prevBtn        	| Node \| NodeList 	| Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     	|
-| nextBtn        	| Node \| NodeList 	| Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         	|
-| dots           	| Boolean          	| Default: `true` <br>Generate navigation dots                                                                                                                                              	|
-| adaptiveHeight 	| Boolean          	| Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  	|
-| skipBtn        	| Boolean          	| Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        	|
-| items          	| Number \| False  	| Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. 	|
+| Option         | Type             | Description                                                                                                                                                                               |
+| -------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| container      | Boolean          | Default: `true` <br>Adds a container element around the slider                                                                                                                            |
+| navBtns        | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
+| prevBtn        | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
+| nextBtn        | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
+| dots           | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
+| adaptiveHeight | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
+| skipBtn        | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
+| items          | Number \| False  | Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. |
 
 ## Methods
 
@@ -58,27 +58,30 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
 ```
 
-| Method        	| Arguments                           	| Description                                               	|
-|---------------	|-------------------------------------	|-----------------------------------------------------------	|
-| scrollToSlide 	| Element                             	| Scrolls slider to specified element                       	|
-| destroy       	| currentSlide, nextSlide, a11yslider 	| Removes everything that the A11YSlider created in the DOM 	|
+| Method        | Arguments                           | Description                                               |
+| ------------- | ----------------------------------- | --------------------------------------------------------- |
+| scrollToSlide | Element                             | Scrolls slider to specified element                       |
+| updateOptions | Object                              | Enter new set of options (reloads slider)                 |
+| refreshHeight |                               | Sets height of slider to height of the current active slide                 |
+| destroy       | currentSlide, nextSlide, a11yslider | Removes everything that the A11YSlider created in the DOM |
 
 ## Events
+
 ```js
 // Example use of the 'afterChange' event
-slider.addEventListener('afterChange', function (e) {
-    console.log(e.detail.currentSlide);
+slider.addEventListener('afterChange', function(e) {
+  console.log(e.detail.currentSlide);
 });
 ```
 
 Events must be called before initializing the slider!
 
-| Event        	| Detail                              	| Description                         	|
-|--------------	|-------------------------------------	|-------------------------------------	|
-| init         	| a11yslider                          	| Fires after slider initialization   	|
-| beforeChange 	| currentSlide, nextSlide, a11yslider 	| Fires before slide change           	|
-| afterChange  	| currentSlide, a11yslider            	| Fires after slide change            	|
-| destroy      	| a11yslider                          	| Fires after the slider is destroyed 	|
+| Event        | Detail                              | Description                         |
+| ------------ | ----------------------------------- | ----------------------------------- |
+| init         | a11yslider                          | Fires after slider initialization   |
+| beforeChange | currentSlide, nextSlide, a11yslider | Fires before slide change           |
+| afterChange  | currentSlide, a11yslider            | Fires after slide change            |
+| destroy      | a11yslider                          | Fires after the slider is destroyed |
 
 ## Browser support
 
@@ -90,8 +93,6 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 
 #### Todo
 
-- `items` option
 - Examples
 - Look into reducing size of bundle
-- Fix _removeSkipBtn() to not be global
-- Add refresh height method
+- Fix \_removeSkipBtn() to not be global

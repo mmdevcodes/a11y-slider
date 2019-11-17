@@ -30,18 +30,18 @@ export default (async () => ({
     {
       file: main,
       format: 'cjs',
-      sourcemap
+      sourcemap: false
     },
     {
       file: module,
       format: 'esm',
-      sourcemap
+      sourcemap: false
     },
     {
       name,
       file: browser,
       format: 'umd',
-      sourcemap
+      sourcemap: false
     }
   ],
   plugins: [
