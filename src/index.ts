@@ -1,7 +1,7 @@
 import 'core-js/es/object/assign';
 import 'core-js/es/symbol/iterator';
 import { debounce } from 'ts-debounce';
-import { createElement, a11yClick, crossCustomEvent } from './utils';
+import { createElement, a11yClick, crossCustomEvent, isInteger } from './utils';
 import './index.css';
 
 interface Options {
@@ -11,7 +11,8 @@ interface Options {
     nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     dots: boolean,
     adaptiveHeight: boolean,
-    skipBtn: boolean
+    skipBtn: boolean,
+    items: number | false
 }
 
 interface ActiveVisibleSlides {
@@ -68,7 +69,8 @@ export default class A11YSlider {
             nextBtn: options && options.nextBtn || createElement('<button class="a11y-slider-next">Next slide</button>'),
             dots: true,
             adaptiveHeight: false,
-            skipBtn: true
+            skipBtn: true,
+            items: false
         };
 
         // Set user-inputted options if available
@@ -108,6 +110,9 @@ export default class A11YSlider {
         this._getActiveAndVisible((visibleSlides: HTMLElement[]) => {
             if (visibleSlides.length === this.slides.length) shouldEnable = false;
         });
+
+        // If user explicitly set items to be shown and it's the same number as available
+        if (this.slides.length === this.options.items) shouldEnable = false;
 
         // Enable/disable slider based on above requirements
         if (shouldEnable && this.sliderEnabled === SliderState.Disabled) {
@@ -232,6 +237,9 @@ export default class A11YSlider {
 
     // Add all CSS needed for the slider. Should mirror _removeCSS()
     private _setCSS() {
+        // Update items
+        this._updateItemsCSS();
+
         // Update slider instance to get the correct elements
         this._getActiveAndVisible();
 
@@ -261,6 +269,9 @@ export default class A11YSlider {
 
     // Remove all CSS needed for the slider. Should mirror _setCSS()
     private _removeCSS() {
+        // Remove item CSS if it was set
+        this._removeItemsCSS();
+
         // Remove class to slider
         this.slider.classList.remove(this._sliderClass);
 
@@ -272,6 +283,37 @@ export default class A11YSlider {
 
         // Remove all a11y functionality
         this._removeFocusable();
+    }
+
+    private _updateItemsCSS() {
+        if (isInteger(this.options.items)) {
+            // Percentage width of each slide
+            const slideWidth = 100 / (this.options.items as number);
+
+            // Set styles for slider
+            this.slider.style.display = 'flex';
+
+            // Set styles for items
+            for (let slide of this.slides) {
+                slide.style.width = `${slideWidth}%`;
+            }
+        } else {
+            // Reset everything if number of items not explicitly set
+            this.slider.style.removeProperty('display');
+
+            for (let slide of this.slides) {
+                slide.style.removeProperty('width');
+            }
+        }
+    }
+
+    // Reset item styling even if explicitly set in the options
+    private _removeItemsCSS() {
+        this.slider.style.removeProperty('display');
+
+        for (let slide of this.slides) {
+            slide.style.removeProperty('width');
+        }
     }
 
     // Makes only the visible items focusable and readable by screenreaders. Should mirror _removeA11Y()

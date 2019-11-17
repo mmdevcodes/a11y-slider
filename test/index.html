@@ -68,7 +68,7 @@
         }
 
         @media (min-width: 768px) {
-            #s-3 > * {
+            #s-4 > * {
                 width: 33.333% !important;
             }
         }
@@ -99,6 +99,13 @@
         <li>1</li>
         <li>2</li>
         <li>3</li>
+        <li>4</li>
+        <li>5</li>
+    </ul>
+    <ul id="s-4" class="slider">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
     </ul>
     <script src="a11y-slider.js"></script>
     <script>
@@ -117,11 +124,16 @@
         });
 
         var a11ySlider = new A11YSlider(slider1);
+
         var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
             adaptiveHeight: true
         });
 
-        var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'));
+        var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'), {
+            items: 4
+        });
+
+        var a11ySlider4 = new A11YSlider(document.querySelector('#s-4'));
     </script>
 </body>
 </html>

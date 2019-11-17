@@ -36,3 +36,11 @@ export const crossCustomEvent = (event: string, params: any) => {
 
     return evt;
 }
+
+// Checks if value is an integer
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
+export const isInteger = (value: any): boolean => {
+  return typeof value === 'number' &&
+    isFinite(value) &&
+    Math.floor(value) === value;
+};
