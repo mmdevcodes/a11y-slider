@@ -12,7 +12,7 @@ interface Options {
     dots: boolean,
     adaptiveHeight: boolean,
     skipBtn: boolean,
-    items: number | false
+    slidesToShow: number | false
 }
 
 interface ActiveVisibleSlides {
@@ -70,7 +70,7 @@ export default class A11YSlider {
             dots: true,
             adaptiveHeight: false,
             skipBtn: true,
-            items: false
+            slidesToShow: false
         };
 
         // Set user-inputted options if available
@@ -112,7 +112,7 @@ export default class A11YSlider {
         });
 
         // If user explicitly set items to be shown and it's the same number as available
-        if (this.slides.length === this.options.items) shouldEnable = false;
+        if (this.slides.length === this.options.slidesToShow) shouldEnable = false;
 
         // Enable/disable slider based on above requirements
         if (shouldEnable && this.sliderEnabled === SliderState.Disabled) {
@@ -286,9 +286,9 @@ export default class A11YSlider {
     }
 
     private _updateItemsCSS() {
-        if (isInteger(this.options.items)) {
+        if (isInteger(this.options.slidesToShow)) {
             // Percentage width of each slide
-            const slideWidth = 100 / (this.options.items as number);
+            const slideWidth = 100 / (this.options.slidesToShow as number);
 
             // Set styles for slider
             this.slider.style.display = 'flex';
@@ -385,7 +385,7 @@ export default class A11YSlider {
     private _generateDots() {
         this.dots = createElement(`<ul class="${this._dotsClass}"></ul>`);
 
-        for (let i = 0; i < this.slides.length; i++) {
+        for (let i = 0; i < this._getDotCount(); i++) {
             const dotLi = createElement('<li></li>');
             const dotBtn = createElement('<button type="button"></button>');
 
@@ -404,11 +404,18 @@ export default class A11YSlider {
             // Append to UL
             dotLi.insertAdjacentElement('beforeend', dotBtn);
             this.dots.insertAdjacentElement('beforeend', dotLi);
-
         }
 
         // Add dots UL to DOM
         this.slider.insertAdjacentElement('afterend', this.dots);
+    }
+
+    private _getDotCount() {
+        let totalSlides: number = this.slides.length;
+        let slidesToShow: number = this.options.slidesToShow || this.visibleSlides.length;
+        let dots: number = totalSlides - slidesToShow + 1;
+
+        return dots;
     }
 
     private _removeDots() {

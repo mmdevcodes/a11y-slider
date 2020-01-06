@@ -9,7 +9,7 @@ interface Options {
     dots: boolean;
     adaptiveHeight: boolean;
     skipBtn: boolean;
-    items: number | false;
+    slidesToShow: number | false;
 }
 declare enum SliderState {
     Enabled = 0,
@@ -47,6 +47,7 @@ export default class A11YSlider {
     private _addSkipBtn;
     private _removeSkipBtn;
     private _generateDots;
+    private _getDotCount;
     private _removeDots;
     private _updateDots;
     private _goPrevOrNext;
