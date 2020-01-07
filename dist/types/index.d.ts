@@ -12,6 +12,7 @@ interface Options {
     slidesToShow: number | false;
     autoplay: boolean;
     autoplaySpeed: number;
+    autoplayHoverPause: boolean;
 }
 declare enum SliderState {
     Enabled = 0,
@@ -29,6 +30,7 @@ export default class A11YSlider {
     private _updateScrollPosition;
     private _autoplayTimer;
     private _autoplayBtn;
+    private _pauseOnMouseLeave;
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
@@ -76,6 +78,7 @@ export default class A11YSlider {
     private _handlePrev;
     private _handleNext;
     private _handleAutoplay;
+    private _handleAutoplayHover;
     private _handleScroll;
     private _dispatchEvent;
     /**

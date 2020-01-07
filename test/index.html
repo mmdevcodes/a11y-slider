@@ -71,6 +71,10 @@
             color: red;
         }
 
+        .a11y-slider-autoplay[data-autoplaying="true"]::after {
+            content: ' (Autoplaying)';
+        }
+
         @media (min-width: 768px) {
             #s-4 > * {
                 width: 33.333% !important;

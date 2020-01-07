@@ -40,18 +40,19 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 
 ## Options
 
-| Option         | Type             | Description                                                                                                                                                                               |
-| -------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| container      | Boolean          | Default: `true` <br>Adds a container element around the slider                                                                                                                            |
-| navBtns        | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
-| prevBtn        | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
-| nextBtn        | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
-| dots           | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
-| adaptiveHeight | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
-| skipBtn        | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
-| slidesToShow   | Number \| False  | Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. |
-| autoplay       | Boolean          | Default: `false` <br>Enables the automatic change of slides                                                                                                                               |
-| autoplaySpeed  | Number           | Default: `3000` <br>Time between slide changes when autoplay is enabled (milliseconds)                                                                                                    |
+| Option              | Type             | Description                                                                                                                                                                               |
+| ------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| container           | Boolean          | Default: `true` <br>Adds a container element around the slider                                                                                                                            |
+| navBtns             | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
+| prevBtn             | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
+| nextBtn             | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
+| dots                | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
+| adaptiveHeight      | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
+| skipBtn             | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
+| slidesToShow        | Number \| False  | Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. |
+| autoplay            | Boolean          | Default: `false` <br>Enables the automatic change of slides                                                                                                                               |
+| autoplaySpeed       | Number           | Default: `4000` <br>Time between slide changes when autoplay is enabled (milliseconds)                                                                                                    |
+| autoplayHoverPause  | Boolean          | Default: `true` <br>If autoplay is enabled then pause when the slider is hovered                                                                                                          |
 
 ## Methods
 
