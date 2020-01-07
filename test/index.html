@@ -60,7 +60,7 @@
         }
 
         #s-2 > * {
-            width: 100%;
+            width: 20%;
         }
 
         #s-2 *:nth-child(odd) {
@@ -79,6 +79,10 @@
             #s-2 *:nth-child(odd) {
                 height: 100px;
             }
+
+            #s-2 > * {
+                width: 100%;
+            }
         }
     </style>
     <h1>A11Y Slider</h1>
@@ -94,7 +98,7 @@
             <div tabindex="0">(last)</div>
         </li>
     </ul>
-    <h2>Regular slider (adaptiveHeight: true)</h2>
+    <h2>Regular slider (adaptiveHeight: true | autoplay: true | disable on mobile)</h2>
     <ul id="s-2" class="slider">
         <li>1</li>
         <li>2</li>

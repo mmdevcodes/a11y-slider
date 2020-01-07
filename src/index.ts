@@ -31,6 +31,11 @@ enum SliderState {
     Disabled
 }
 
+enum AutoplayState {
+    Enable,
+    Disable
+}
+
 export default class A11YSlider {
     private _activeClass: string;
     private _visibleClass: string;
@@ -240,8 +245,8 @@ export default class A11YSlider {
         this._removeCSS();
 
         // Remove all adaptive height functionality
-        this._updateHeight(false);
         window.removeEventListener('resize', this._updateHeightDebounced);
+        this._updateHeight(false);
 
         // Stop autoplay if enabled
         if (this.options.autoplay) this._disableAutoplay();
@@ -409,7 +414,13 @@ export default class A11YSlider {
 
             // Event handlers to switch to slide
             const switchToSlide = (event: Event) => {
-                if (a11yClick(event) === true) this.scrollToSlide(this.slides[i]);
+                if (a11yClick(event) === true) {
+                    // Go to slide
+                    this.scrollToSlide(this.slides[i]);
+
+                    // Disable autoplay if enabled
+                    this._toggleAutoplay(AutoplayState.Disable);
+                }
             }
 
             // Add event listeners
@@ -460,15 +471,12 @@ export default class A11YSlider {
         this.slider.insertAdjacentElement('beforebegin', this._autoplayBtn);
 
         // Start autoplaying
-        this._toggleAutoplay(true);
+        this._toggleAutoplay(AutoplayState.Enable);
     }
 
     private _disableAutoplay() {
         // Stop autoplaying
-        window.clearInterval(this._autoplayTimer);
-
-        // Reset autoplay timer
-        this._autoplayTimer = 0;
+        this._toggleAutoplay(AutoplayState.Disable);
 
         // Remove event listeners for toggle button
         this._autoplayBtn.removeEventListener('click', this._handleAutoplay);
@@ -478,8 +486,8 @@ export default class A11YSlider {
         this._autoplayBtn.parentNode && this._autoplayBtn.parentNode.removeChild(this._autoplayBtn);
     }
 
-    private _toggleAutoplay(start?: boolean) {
-        if (this._autoplayTimer === 0 || start === true) {
+    private _toggleAutoplay(setState?: AutoplayState) {
+        const startAutoplaying = () => {
             // Start autoplaying
             this._autoplayTimer = window.setInterval(() => {
                 this._goPrevOrNext(SlideDirection.Next);
@@ -487,7 +495,9 @@ export default class A11YSlider {
 
             // Set autoplay button state
             this._autoplayBtn.setAttribute('data-autoplaying', 'true');
-        } else {
+        }
+
+        const stopAutoplaying = () => {
             // Stop autoplaying
             window.clearInterval(this._autoplayTimer);
 
@@ -496,6 +506,13 @@ export default class A11YSlider {
 
             // Set autoplay button state
             this._autoplayBtn.setAttribute('data-autoplaying', 'false');
+        }
+
+        // If state is explicitly set
+        if (setState === AutoplayState.Enable) {
+            startAutoplaying();
+        } else if (setState === AutoplayState.Disable) {
+            stopAutoplaying();
         }
     }
 
@@ -604,16 +621,32 @@ export default class A11YSlider {
     }
 
     private _handlePrev(event: Event) {
-        if (a11yClick(event) === true) this._goPrevOrNext(SlideDirection.Prev);
+        if (a11yClick(event) === true) {
+            // Go to previous slide
+            this._goPrevOrNext(SlideDirection.Prev);
+
+            // Disable autoplay if ongoing
+            this._toggleAutoplay(AutoplayState.Disable);
+        }
     }
 
     private _handleNext(event: Event) {
-        if (a11yClick(event) === true) this._goPrevOrNext(SlideDirection.Next);
+        if (a11yClick(event) === true) {
+            // Go to next slide
+            this._goPrevOrNext(SlideDirection.Next);
+
+            // Disable autoplay if ongoing
+            this._toggleAutoplay(AutoplayState.Disable);
+        }
     }
 
     private _handleAutoplay(event: Event) {
         if (a11yClick(event) === true) {
-            this._toggleAutoplay();
+            if (this._autoplayTimer === 0) {
+                this._toggleAutoplay(AutoplayState.Enable);
+            } else {
+                this._toggleAutoplay(AutoplayState.Disable);
+            }
         };
     }
 
