@@ -114,7 +114,9 @@
         <li>4</li>
         <li>5</li>
     </ul>
-    <h2>Only enable on mobile</h2>
+    <h2>Only enable on mobile. Custom prev/next button</h2>
+    <button id="prev">Prev</button>
+    <button id="next">Next</button>
     <ul id="s-4" class="slider">
         <li>1</li>
         <li>2</li>
@@ -148,7 +150,10 @@
             slidesToShow: 4
         });
 
-        var a11ySlider4 = new A11YSlider(document.querySelector('#s-4'));
+        var a11ySlider4 = new A11YSlider(document.querySelector('#s-4'), {
+            prevBtn: document.querySelector('#prev'),
+            nextBtn: document.querySelector('#next')
+        });
     </script>
 </body>
 </html>

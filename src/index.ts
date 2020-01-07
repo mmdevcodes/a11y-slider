@@ -1,7 +1,7 @@
 import 'core-js/es/symbol/iterator';
 import 'core-js/es/object/assign';
 import { debounce } from 'ts-debounce';
-import { createElement, a11yClick, crossCustomEvent, isInteger } from './utils';
+import { createElement, a11yClick, crossCustomEvent, isInteger, everyElement } from './utils';
 import './index.css';
 
 interface Options {
@@ -134,6 +134,17 @@ export default class A11YSlider {
         } else if (!shouldEnable && this.sliderEnabled === SliderState.Enabled) {
             this._disableSlider();
         }
+
+        // Custom buttons should be hidden if not initially enabled
+        if (!shouldEnable && this._hasCustomBtns) {
+            everyElement(this.options.prevBtn, prevBtn => {
+                prevBtn.classList.add('a11y-slider-hide');
+            });
+
+            everyElement(this.options.nextBtn, nextBtn => {
+                nextBtn.classList.add('a11y-slider-hide');
+            });
+        }
     }
 
      // Enable all functionality for the slider. Should mirror _disableSlider()
@@ -161,20 +172,28 @@ export default class A11YSlider {
             }
         }
 
-        // TODO: Move add/removal of buttons into it's own function
-        // Add event listeners for prev/next buttons. Possible for there to be multiple so need to loop through them all
-        const prevBtns = this.options.prevBtn instanceof HTMLElement ? [this.options.prevBtn] : this.options.prevBtn;
-        const nextBtns = this.options.nextBtn instanceof HTMLElement ? [this.options.nextBtn] : this.options.nextBtn;
-
-        for (let prevBtn of prevBtns) {
+        // Possible for there to be multiple so need to loop through them all
+        everyElement(this.options.prevBtn, prevBtn => {
+            // Add event listeners for prev/next buttons
             prevBtn.addEventListener('click', this._handlePrev, { passive: true });
             prevBtn.addEventListener('keypress', this._handlePrev, { passive: true });
-        }
 
-        for (let nextBtn of nextBtns) {
+            if (this._hasCustomBtns) {
+                // User generated buttons get special hide class removed
+                prevBtn.classList.remove('a11y-slider-hide');
+            }
+        });
+
+        everyElement(this.options.nextBtn, nextBtn => {
+            // Add event listeners for prev/next buttons
             nextBtn.addEventListener('click', this._handleNext, { passive: true });
             nextBtn.addEventListener('keypress', this._handleNext, { passive: true });
-        }
+
+            if (this._hasCustomBtns) {
+                // User generated buttons get special hide class removed
+                nextBtn.classList.remove('a11y-slider-hide');
+            }
+        });
 
         // Add dot navigation if enabled
         if (this.options.dots) this._generateDots();
@@ -214,26 +233,34 @@ export default class A11YSlider {
         // Remove skip button
         this._removeSkipBtn();
 
-        // Remove event listeners for prev/next buttons
         // Possible for there to be multiple so need to loop through them all
-        const prevBtns = this.options.prevBtn instanceof HTMLElement ? [this.options.prevBtn] : this.options.prevBtn;
-        const nextBtns = this.options.nextBtn instanceof HTMLElement ? [this.options.nextBtn] : this.options.nextBtn;
-
-        for (let prevBtn of prevBtns) {
+        everyElement(this.options.prevBtn, prevBtn => {
+            // Remove event listeners for prev/next buttons
             prevBtn.removeEventListener('click', this._handlePrev);
             prevBtn.removeEventListener('keypress', this._handlePrev);
 
-            // Only remove generated buttons, not user-defined ones
-            if (!this._hasCustomBtns) prevBtn.parentNode && prevBtn.parentNode.removeChild(prevBtn);
-        }
+            if (!this._hasCustomBtns) {
+                // Only remove generated buttons, not user-defined ones
+                prevBtn.parentNode && prevBtn.parentNode.removeChild(prevBtn);
+            } else {
+                // User generated buttons get special hide class removed
+                prevBtn.classList.add('a11y-slider-hide');
+            }
+        });
 
-        for (let nextBtn of nextBtns) {
+        everyElement(this.options.nextBtn, nextBtn => {
+            // Remove event listeners for prev/next buttons
             nextBtn.removeEventListener('click', this._handleNext);
             nextBtn.removeEventListener('keypress', this._handleNext);
 
-            // Only remove generated buttons, not user-defined ones
-            if (!this._hasCustomBtns) nextBtn.parentNode && nextBtn.parentNode.removeChild(nextBtn);
-        }
+            if (!this._hasCustomBtns) {
+                // Only remove generated buttons, not user-defined ones
+                nextBtn.parentNode && nextBtn.parentNode.removeChild(nextBtn);
+            } else {
+                // User generated buttons get special hide class removed
+                nextBtn.classList.add('a11y-slider-hide');
+            }
+        });
 
         // Will remove dots if they exist
         this._removeDots();
@@ -452,7 +479,12 @@ export default class A11YSlider {
 
     private _updateDots(activeSlide: HTMLElement) {
         if (this.dots instanceof HTMLElement) {
-            const activeIndex = Array.prototype.indexOf.call(activeSlide.parentNode && activeSlide.parentNode.children, activeSlide);
+            let activeIndex = Array.prototype.indexOf.call(activeSlide.parentNode && activeSlide.parentNode.children, activeSlide);
+
+            // Set dot to last item if active index is higher than amount
+            if (activeIndex > this.dots.children.length) {
+                activeIndex = this.dots.children.length - 1;
+            }
 
             // Reset children active class if exist
             for (let dot of this.dots.children) dot.querySelector('button')!.classList.remove('active');
