@@ -1,3 +1,7 @@
+interface AllElements {
+    (element: HTMLElement): void;
+}
+
 export const createElement = (html: string): HTMLElement => {
     return new DOMParser().parseFromString(html, 'text/html').body.firstChild as HTMLElement;
 }
@@ -44,3 +48,14 @@ export const isInteger = (value: any): boolean => {
     isFinite(value) &&
     Math.floor(value) === value;
 };
+
+// Run a function on all elements even if it's a collection or single
+export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList, callback?: AllElements) => {
+    const els = elements instanceof HTMLElement ? [elements] : elements;
+
+    for (let el of els) {
+        if (el instanceof HTMLElement) {
+            callback && callback(el);
+        }
+    }
+}

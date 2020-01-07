@@ -47,3 +47,7 @@
     clip: auto;
     padding: 10px;
 }
+
+.a11y-slider-hide {
+    display: none;
+}
