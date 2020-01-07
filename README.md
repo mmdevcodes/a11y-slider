@@ -49,7 +49,9 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 | dots           | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
 | adaptiveHeight | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
 | skipBtn        | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
-| items          | Number \| False  | Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. |
+| slidesToShow   | Number \| False  | Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. |
+| autoplay       | Boolean          | Default: `false` <br>Enables the automatic change of slides                                                                                                                               |
+| autoplaySpeed  | Number           | Default: `3000` <br>Time between slide changes when autoplay is enabled (milliseconds)                                                                                                    |
 
 ## Methods
 

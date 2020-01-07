@@ -9,7 +9,9 @@ interface Options {
     dots: boolean;
     adaptiveHeight: boolean;
     skipBtn: boolean;
-    items: number | false;
+    slidesToShow: number | false;
+    autoplay: boolean;
+    autoplaySpeed: number;
 }
 declare enum SliderState {
     Enabled = 0,
@@ -25,6 +27,8 @@ export default class A11YSlider {
     private _checkShouldEnableDebounced;
     private _updateHeightDebounced;
     private _updateScrollPosition;
+    private _autoplayTimer;
+    private _autoplayBtn;
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
@@ -47,8 +51,12 @@ export default class A11YSlider {
     private _addSkipBtn;
     private _removeSkipBtn;
     private _generateDots;
+    private _getDotCount;
     private _removeDots;
     private _updateDots;
+    private _enableAutoplay;
+    private _disableAutoplay;
+    private _toggleAutoplay;
     private _goPrevOrNext;
     /**
      * Moves slider to target element
@@ -67,6 +75,7 @@ export default class A11YSlider {
     private _getActiveAndVisible;
     private _handlePrev;
     private _handleNext;
+    private _handleAutoplay;
     private _handleScroll;
     private _dispatchEvent;
     /**

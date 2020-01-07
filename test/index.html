@@ -60,7 +60,7 @@
         }
 
         #s-2 > * {
-            width: 100%;
+            width: 20%;
         }
 
         #s-2 *:nth-child(odd) {
@@ -79,8 +79,14 @@
             #s-2 *:nth-child(odd) {
                 height: 100px;
             }
+
+            #s-2 > * {
+                width: 100%;
+            }
         }
     </style>
+    <h1>A11Y Slider</h1>
+    <h2>Regular slider (100% CSS)</h2>
     <ul id="s-1" class="slider">
         <li>1</li>
         <li>2</li>
@@ -92,6 +98,7 @@
             <div tabindex="0">(last)</div>
         </li>
     </ul>
+    <h2>Regular slider (adaptiveHeight: true | autoplay: true | disable on mobile)</h2>
     <ul id="s-2" class="slider">
         <li>1</li>
         <li>2</li>
@@ -99,6 +106,7 @@
         <li>4</li>
         <li>5</li>
     </ul>
+    <h2>Regular slider (specify show 4 via JS)</h2>
     <ul id="s-3" class="slider">
         <li>1</li>
         <li>2</li>
@@ -106,6 +114,7 @@
         <li>4</li>
         <li>5</li>
     </ul>
+    <h2>Only enable on mobile</h2>
     <ul id="s-4" class="slider">
         <li>1</li>
         <li>2</li>
@@ -130,11 +139,13 @@
         var a11ySlider = new A11YSlider(slider1);
 
         var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
-            adaptiveHeight: true
+            adaptiveHeight: true,
+            autoplay: true,
+            autoplaySpeed: 2000
         });
 
         var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'), {
-            items: 4
+            slidesToShow: 4
         });
 
         var a11ySlider4 = new A11YSlider(document.querySelector('#s-4'));

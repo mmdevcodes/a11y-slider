@@ -12,7 +12,9 @@ interface Options {
     dots: boolean,
     adaptiveHeight: boolean,
     skipBtn: boolean,
-    items: number | false
+    slidesToShow: number | false,
+    autoplay: boolean,
+    autoplaySpeed: number
 }
 
 interface ActiveVisibleSlides {
@@ -29,6 +31,11 @@ enum SliderState {
     Disabled
 }
 
+enum AutoplayState {
+    Enable,
+    Disable
+}
+
 export default class A11YSlider {
     private _activeClass: string;
     private _visibleClass: string;
@@ -39,6 +46,8 @@ export default class A11YSlider {
     private _checkShouldEnableDebounced: any;
     private _updateHeightDebounced: any;
     private _updateScrollPosition: any;
+    private _autoplayTimer: number;
+    private _autoplayBtn: HTMLElement;
     public slider: HTMLElement;
     public slides: HTMLCollectionOf<HTMLElement>;
     public dots: HTMLElement | null;
@@ -57,6 +66,8 @@ export default class A11YSlider {
         this._dotsClass = 'a11y-slider-dots';
         this._sliderClass = 'a11y-slider';
         this._focusable = 'a, area, input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]';
+        this._autoplayTimer = 0;
+        this._autoplayBtn = createElement(`<button type="button" class="a11y-slider-autoplay">Toggle slider autoplay</button>`);
         this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
@@ -65,12 +76,14 @@ export default class A11YSlider {
         this.options = {
             container: true,
             navBtns: true,
-            prevBtn: options && options.prevBtn || createElement('<button class="a11y-slider-prev">Previous slide</button>'),
-            nextBtn: options && options.nextBtn || createElement('<button class="a11y-slider-next">Next slide</button>'),
+            prevBtn: options && options.prevBtn || createElement('<button type="button" class="a11y-slider-prev">Previous slide</button>'),
+            nextBtn: options && options.nextBtn || createElement('<button type="button" class="a11y-slider-next">Next slide</button>'),
             dots: true,
             adaptiveHeight: false,
             skipBtn: true,
-            items: false
+            slidesToShow: false,
+            autoplay: false,
+            autoplaySpeed: 3000
         };
 
         // Set user-inputted options if available
@@ -79,6 +92,7 @@ export default class A11YSlider {
         // Binding
         this._handlePrev = this._handlePrev.bind(this);
         this._handleNext = this._handleNext.bind(this);
+        this._handleAutoplay = this._handleAutoplay.bind(this);
         this._checkShouldEnableDebounced = debounce(this._checkShouldEnable.bind(this), 250);
         this._updateHeightDebounced = debounce(this._updateHeight.bind(this), 250);
         this._updateScrollPosition = debounce(() => this.scrollToSlide(this.activeSlide), 250);
@@ -112,7 +126,7 @@ export default class A11YSlider {
         });
 
         // If user explicitly set items to be shown and it's the same number as available
-        if (this.slides.length === this.options.items) shouldEnable = false;
+        if (this.slides.length === this.options.slidesToShow) shouldEnable = false;
 
         // Enable/disable slider based on above requirements
         if (shouldEnable && this.sliderEnabled === SliderState.Disabled) {
@@ -180,6 +194,9 @@ export default class A11YSlider {
             window.addEventListener('resize', this._updateHeightDebounced.bind(this));
         }
 
+        // Start autoplay if enabled
+        if (this.options.autoplay) this._enableAutoplay();
+
         // On resize make sure to update scroll position as content may change in width/height
         window.addEventListener('resize', this._updateScrollPosition);
     }
@@ -228,8 +245,11 @@ export default class A11YSlider {
         this._removeCSS();
 
         // Remove all adaptive height functionality
-        this._updateHeight(false);
         window.removeEventListener('resize', this._updateHeightDebounced);
+        this._updateHeight(false);
+
+        // Stop autoplay if enabled
+        if (this.options.autoplay) this._disableAutoplay();
 
         // Remove scroll position update check
         window.removeEventListener('resize', this._updateScrollPosition);
@@ -286,9 +306,9 @@ export default class A11YSlider {
     }
 
     private _updateItemsCSS() {
-        if (isInteger(this.options.items)) {
+        if (isInteger(this.options.slidesToShow)) {
             // Percentage width of each slide
-            const slideWidth = 100 / (this.options.items as number);
+            const slideWidth = 100 / (this.options.slidesToShow as number);
 
             // Set styles for slider
             this.slider.style.display = 'flex';
@@ -385,7 +405,7 @@ export default class A11YSlider {
     private _generateDots() {
         this.dots = createElement(`<ul class="${this._dotsClass}"></ul>`);
 
-        for (let i = 0; i < this.slides.length; i++) {
+        for (let i = 0; i < this._getDotCount(); i++) {
             const dotLi = createElement('<li></li>');
             const dotBtn = createElement('<button type="button"></button>');
 
@@ -394,7 +414,13 @@ export default class A11YSlider {
 
             // Event handlers to switch to slide
             const switchToSlide = (event: Event) => {
-                if (a11yClick(event) === true) this.scrollToSlide(this.slides[i]);
+                if (a11yClick(event) === true) {
+                    // Go to slide
+                    this.scrollToSlide(this.slides[i]);
+
+                    // Disable autoplay if enabled
+                    this._toggleAutoplay(AutoplayState.Disable);
+                }
             }
 
             // Add event listeners
@@ -404,11 +430,18 @@ export default class A11YSlider {
             // Append to UL
             dotLi.insertAdjacentElement('beforeend', dotBtn);
             this.dots.insertAdjacentElement('beforeend', dotLi);
-
         }
 
         // Add dots UL to DOM
         this.slider.insertAdjacentElement('afterend', this.dots);
+    }
+
+    private _getDotCount() {
+        let totalSlides: number = this.slides.length;
+        let slidesToShow: number = this.options.slidesToShow || this.visibleSlides.length;
+        let dots: number = totalSlides - slidesToShow + 1;
+
+        return dots;
     }
 
     private _removeDots() {
@@ -426,6 +459,60 @@ export default class A11YSlider {
 
             // Add class to active dot
             this.dots.children[activeIndex].querySelector('button')!.classList.add('active');
+        }
+    }
+
+    private _enableAutoplay() {
+        // Add event listeners to autoplay button to toggle
+        this._autoplayBtn.addEventListener('click', this._handleAutoplay, { passive: true });
+        this._autoplayBtn.addEventListener('keypress', this._handleAutoplay, { passive: true });
+
+        // Add autoplay toggle button to DOM
+        this.slider.insertAdjacentElement('beforebegin', this._autoplayBtn);
+
+        // Start autoplaying
+        this._toggleAutoplay(AutoplayState.Enable);
+    }
+
+    private _disableAutoplay() {
+        // Stop autoplaying
+        this._toggleAutoplay(AutoplayState.Disable);
+
+        // Remove event listeners for toggle button
+        this._autoplayBtn.removeEventListener('click', this._handleAutoplay);
+        this._autoplayBtn.removeEventListener('keypress', this._handleAutoplay);
+
+        // Remove toggle button from DOM
+        this._autoplayBtn.parentNode && this._autoplayBtn.parentNode.removeChild(this._autoplayBtn);
+    }
+
+    private _toggleAutoplay(setState?: AutoplayState) {
+        const startAutoplaying = () => {
+            // Start autoplaying
+            this._autoplayTimer = window.setInterval(() => {
+                this._goPrevOrNext(SlideDirection.Next);
+            }, this.options.autoplaySpeed);
+
+            // Set autoplay button state
+            this._autoplayBtn.setAttribute('data-autoplaying', 'true');
+        }
+
+        const stopAutoplaying = () => {
+            // Stop autoplaying
+            window.clearInterval(this._autoplayTimer);
+
+            // Reset autoplay timer
+            this._autoplayTimer = 0;
+
+            // Set autoplay button state
+            this._autoplayBtn.setAttribute('data-autoplaying', 'false');
+        }
+
+        // If state is explicitly set
+        if (setState === AutoplayState.Enable) {
+            startAutoplaying();
+        } else if (setState === AutoplayState.Disable) {
+            stopAutoplaying();
         }
     }
 
@@ -534,11 +621,33 @@ export default class A11YSlider {
     }
 
     private _handlePrev(event: Event) {
-        if (a11yClick(event) === true) this._goPrevOrNext(SlideDirection.Prev);
+        if (a11yClick(event) === true) {
+            // Go to previous slide
+            this._goPrevOrNext(SlideDirection.Prev);
+
+            // Disable autoplay if ongoing
+            this._toggleAutoplay(AutoplayState.Disable);
+        }
     }
 
     private _handleNext(event: Event) {
-        if (a11yClick(event) === true) this._goPrevOrNext(SlideDirection.Next);
+        if (a11yClick(event) === true) {
+            // Go to next slide
+            this._goPrevOrNext(SlideDirection.Next);
+
+            // Disable autoplay if ongoing
+            this._toggleAutoplay(AutoplayState.Disable);
+        }
+    }
+
+    private _handleAutoplay(event: Event) {
+        if (a11yClick(event) === true) {
+            if (this._autoplayTimer === 0) {
+                this._toggleAutoplay(AutoplayState.Enable);
+            } else {
+                this._toggleAutoplay(AutoplayState.Disable);
+            }
+        };
     }
 
     private _handleScroll() {
