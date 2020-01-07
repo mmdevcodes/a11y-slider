@@ -508,8 +508,11 @@ export default class A11YSlider {
         // Add event listeners for autoplay
         this._autoplayBtn.addEventListener('click', this._handleAutoplay, { passive: true });
         this._autoplayBtn.addEventListener('keypress', this._handleAutoplay, { passive: true });
-        this.slider.addEventListener('mouseenter', this._handleAutoplayHover, { passive: true });
-        this.slider.addEventListener('mouseleave', this._handleAutoplayHover, { passive: true });
+
+        if (this.options.autoplayHoverPause) {
+            this.slider.addEventListener('mouseenter', this._handleAutoplayHover, { passive: true });
+            this.slider.addEventListener('mouseleave', this._handleAutoplayHover, { passive: true });
+        }
 
         // Add autoplay toggle button to DOM
         this.slider.insertAdjacentElement('beforebegin', this._autoplayBtn);
