@@ -52,6 +52,7 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 | autoplay            | Boolean          | Default: `false` <br>Enables the automatic change of slides                                                                                                                               |
 | autoplaySpeed       | Number           | Default: `4000` <br>Time between slide changes when autoplay is enabled (milliseconds)                                                                                                    |
 | autoplayHoverPause  | Boolean          | Default: `true` <br>If autoplay is enabled then pause when the slider is hovered                                                                                                          |
+| centerMode          | Boolean          | Default: `false` <br>**(EXPERIMENTAL)** Makes the center slide active                                                                                                                    |
 
 ## Methods
 

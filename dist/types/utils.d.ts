@@ -9,3 +9,8 @@ export declare const a11yClick: (event: any) => boolean;
 export declare const crossCustomEvent: (event: string, params: any) => CustomEvent<any>;
 export declare const isInteger: (value: any) => boolean;
 export declare const everyElement: (elements: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList, callback?: ((element: HTMLElement) => void) | undefined) => void;
+/**
+ * Get computed width/height with subpixels
+ * https://github.com/Vestride/glen.codes/blob/master/src/posts/getting-element-width.md
+ */
+export declare const getSubpixelStyle: (element: HTMLElement, style: "width" | "height", styles?: CSSStyleDeclaration | undefined) => number;
