@@ -13,6 +13,7 @@ interface Options {
     autoplay: boolean;
     autoplaySpeed: number;
     autoplayHoverPause: boolean;
+    centerMode: boolean;
 }
 declare enum SliderState {
     Enabled = 0,

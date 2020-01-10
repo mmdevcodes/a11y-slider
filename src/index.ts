@@ -1,7 +1,14 @@
 import 'core-js/es/symbol/iterator';
 import 'core-js/es/object/assign';
 import { debounce } from 'ts-debounce';
-import { createElement, a11yClick, crossCustomEvent, isInteger, everyElement } from './utils';
+import {
+    createElement,
+    a11yClick,
+    crossCustomEvent,
+    isInteger,
+    everyElement,
+    getSubpixelStyle
+} from './utils';
 import './index.css';
 
 interface Options {
@@ -15,7 +22,8 @@ interface Options {
     slidesToShow: number | false,
     autoplay: boolean,
     autoplaySpeed: number,
-    autoplayHoverPause: boolean
+    autoplayHoverPause: boolean,
+    centerMode: boolean
 }
 
 interface ActiveVisibleSlides {
@@ -93,7 +101,8 @@ export default class A11YSlider {
             slidesToShow: false,
             autoplay: false,
             autoplaySpeed: 4000,
-            autoplayHoverPause: true
+            autoplayHoverPause: true,
+            centerMode: false
         };
 
         // Set user-inputted options if available
@@ -108,7 +117,7 @@ export default class A11YSlider {
         this._updateHeightDebounced = debounce(this._updateHeight.bind(this), 250);
         this._generateDotsDebounced = debounce(this._generateDots.bind(this), 250);
         this._updateScrollPosition = debounce(() => this.scrollToSlide(this.activeSlide), 250);
-        this._handleScroll = debounce(this._handleScroll.bind(this), 150); // May fire twice depending on browser
+        this._handleScroll = debounce(this._handleScroll.bind(this), 175); // May fire twice depending on browser
 
         // Initialize slider
         this._init();
@@ -133,7 +142,7 @@ export default class A11YSlider {
         if (this.slides.length <= 1) shouldEnable = false;
 
         // If there are no slides outside the slider's viewport a slider is not needed
-        this._getActiveAndVisible((visibleSlides: HTMLElement[]) => {
+        this._getActiveAndVisible(null, (visibleSlides: HTMLElement[]) => {
             if (visibleSlides.length === this.slides.length) shouldEnable = false;
         });
 
@@ -163,6 +172,9 @@ export default class A11YSlider {
     private _enableSlider() {
         // Set slider to enabled
         this.sliderEnabled = SliderState.Enabled;
+
+        // Firefox moves the slider depending on page load so resetting to 0
+        setTimeout(() => this.slider.scrollLeft = 0, 1);
 
         // Add slider container to DOM and move slider into it if enabled
         if (this.options.container) {
@@ -295,12 +307,12 @@ export default class A11YSlider {
     }
 
     // Add all CSS needed for the slider. Should mirror _removeCSS()
-    private _setCSS() {
+    private _setCSS(activeSlide?: HTMLElement) {
         // Update items
         this._updateItemsCSS();
 
         // Update slider instance to get the correct elements
-        this._getActiveAndVisible();
+        this._getActiveAndVisible(activeSlide || null);
 
         // Add main slider class if it doesn't have it already
         this.slider.classList.add(this._sliderClass);
@@ -445,6 +457,9 @@ export default class A11YSlider {
         // Remove dots if they already exist
         this._removeDots();
 
+        // Stop if slider is disabled
+        if (this.sliderEnabled === SliderState.Disabled) return;
+
         // Create <ul> wrapper for dots
         this.dots = createElement(`<ul class="${this._dotsClass}"></ul>`);
 
@@ -494,11 +509,11 @@ export default class A11YSlider {
     }
 
     private _removeDots() {
+        window.removeEventListener('resize', this._generateDotsDebounced);
+
         if (this.dots instanceof HTMLElement) {
             this.dots.parentNode && this.dots.parentNode.removeChild(this.dots);
         }
-
-        window.removeEventListener('resize', this._generateDotsDebounced);
     }
 
     private _updateDots(activeSlide: HTMLElement) {
@@ -579,7 +594,7 @@ export default class A11YSlider {
     }
 
     private _goPrevOrNext(direction: SlideDirection) {
-        this._getActiveAndVisible((visibleSlides: HTMLElement[], activeSlide: HTMLElement) => {
+        this._getActiveAndVisible(null, (visibleSlides: HTMLElement[], activeSlide: HTMLElement) => {
             const firstSlide = this.slider.firstElementChild as HTMLElement;
             const lastSlide = this.slider.lastElementChild as HTMLElement;
             const firstVisibleSlide = visibleSlides[0];
@@ -608,6 +623,7 @@ export default class A11YSlider {
      */
     public scrollToSlide(targetSlide: HTMLElement) {
         const modernBrowser: boolean = !!HTMLElement.prototype.scrollTo;
+        const originalPosition = this.slider.scrollLeft;
 
         // Dispatch custom event
         this._dispatchEvent('beforeChange', {
@@ -628,6 +644,16 @@ export default class A11YSlider {
         } else {
             this.slider.scrollLeft = targetSlide.offsetLeft;
         }
+
+        // If the slider didn't move make sure to update the slider still
+        setTimeout(() => {
+            if (
+                this.slider.scrollLeft === originalPosition &&
+                this.sliderEnabled === SliderState.Enabled
+            ) {
+                this._setCSS(targetSlide);
+            }
+        }, 50);
 
         // Trigger dot update
         this._updateDots(targetSlide);
@@ -651,7 +677,7 @@ export default class A11YSlider {
      */
     private _updateHeight(target: HTMLElement | false) {
         if (target instanceof HTMLElement) {
-            const targetHeight = target.offsetHeight;
+            const targetHeight = getSubpixelStyle(target, 'height');
             this.slider.style.height = `${targetHeight}px`;
         } else {
             this.slider.style.height = '';
@@ -662,7 +688,7 @@ export default class A11YSlider {
         this._updateHeight(this.activeSlide);
     }
 
-    private _getActiveAndVisible(callback?: ActiveVisibleSlides) {
+    private _getActiveAndVisible(explicitActive: HTMLElement | null, callback?: ActiveVisibleSlides) {
         let visibleSlides: HTMLElement[] = [];
 
         // Only detects items in the visible viewport of the parent element
@@ -677,7 +703,14 @@ export default class A11YSlider {
         }
 
         this.visibleSlides = visibleSlides;
-        this.activeSlide = visibleSlides[0];
+
+        if (explicitActive) {
+            this.activeSlide = explicitActive;
+        } else if (this.options.centerMode === true) {
+            this.activeSlide = this.visibleSlides[Math.floor((this.visibleSlides.length - 1) / 2)];
+        } else {
+            this.activeSlide = visibleSlides[0];
+        }
 
         callback && callback(this.visibleSlides, this.activeSlide);
     }
