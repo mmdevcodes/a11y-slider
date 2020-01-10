@@ -1,6 +1,6 @@
 import React from 'react';
+import GithubCorner from 'react-github-corner';
 import Layout from '../components/layout';
-import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
 import Intro from '../components/Intro';
 import Examples from '../components/Examples';
@@ -15,6 +15,12 @@ export default () => {
         <Examples id="two" className="wrapper style1 fade-up" />
         <Download id="three" className="wrapper style3 fade-up" />
       </div>
+      <GithubCorner
+        href="https://github.com/mmahandev/a11y-slider"
+        direction="right"
+        size="120"
+        svgStyle={{ position: 'fixed', zIndex: 9001 }}
+      />
     </Layout>
   );
 }
