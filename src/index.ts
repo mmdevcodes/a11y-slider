@@ -51,6 +51,7 @@ export default class A11YSlider {
     private _focusable: string;
     private _checkShouldEnableDebounced: any;
     private _updateHeightDebounced: any;
+    private _generateDotsDebounced: any;
     private _updateScrollPosition: any;
     private _autoplayTimer: IsAutoplaying;
     private _autoplayBtn: HTMLElement;
@@ -105,6 +106,7 @@ export default class A11YSlider {
         this._handleAutoplayHover = this._handleAutoplayHover.bind(this);
         this._checkShouldEnableDebounced = debounce(this._checkShouldEnable.bind(this), 250);
         this._updateHeightDebounced = debounce(this._updateHeight.bind(this), 250);
+        this._generateDotsDebounced = debounce(this._generateDots.bind(this), 250);
         this._updateScrollPosition = debounce(() => this.scrollToSlide(this.activeSlide), 250);
         this._handleScroll = debounce(this._handleScroll.bind(this), 150); // May fire twice depending on browser
 
@@ -440,6 +442,10 @@ export default class A11YSlider {
     }
 
     private _generateDots() {
+        // Remove dots if they already exist
+        this._removeDots();
+
+        // Create <ul> wrapper for dots
         this.dots = createElement(`<ul class="${this._dotsClass}"></ul>`);
 
         for (let i = 0; i < this._getDotCount(); i++) {
@@ -469,8 +475,14 @@ export default class A11YSlider {
             this.dots.insertAdjacentElement('beforeend', dotLi);
         }
 
+        // Update styles of dots before adding to DOM
+        this._updateDots(this.activeSlide);
+
         // Add dots UL to DOM
         this.slider.insertAdjacentElement('afterend', this.dots);
+
+        // Dots needed may change on screen size so regenerate them from scratch
+        window.addEventListener('resize', this._generateDotsDebounced);
     }
 
     private _getDotCount() {
@@ -485,6 +497,8 @@ export default class A11YSlider {
         if (this.dots instanceof HTMLElement) {
             this.dots.parentNode && this.dots.parentNode.removeChild(this.dots);
         }
+
+        window.removeEventListener('resize', this._generateDotsDebounced);
     }
 
     private _updateDots(activeSlide: HTMLElement) {

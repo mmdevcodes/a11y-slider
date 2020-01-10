@@ -27,6 +27,7 @@ export default class A11YSlider {
     private _focusable;
     private _checkShouldEnableDebounced;
     private _updateHeightDebounced;
+    private _generateDotsDebounced;
     private _updateScrollPosition;
     private _autoplayTimer;
     private _autoplayBtn;
