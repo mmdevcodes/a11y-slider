@@ -12,7 +12,6 @@ npm install a11y-slider
 
 Install via browser:
 
-<!-- prettier-ignore -->
 ```html
 <!-- In the <head> -->
 <link rel="stylesheet" href="//unpkg.com/a11y-slider@latest/dist/a11y-slider.css" />
