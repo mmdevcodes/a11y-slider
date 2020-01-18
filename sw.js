@@ -26,20 +26,20 @@ workbox.clientsClaim();
  */
 self.__precacheManifest = [
   {
-    "url": "webpack-runtime-02bc75d910d72862c2ff.js"
+    "url": "webpack-runtime-5bf7b0b29a1d95377687.js"
   },
   {
     "url": "commons-58486c2ce8c9aff80941.js"
   },
   {
-    "url": "app-9a077fd912dcd454d82e.js"
+    "url": "app-90f766ab7a85ee0d1b0f.js"
   },
   {
     "url": "component---node-modules-gatsby-plugin-offline-app-shell-js-b1f6a3883e47831e3173.js"
   },
   {
     "url": "offline-plugin-app-shell-fallback/index.html",
-    "revision": "09e4413a297145a4ba3944cedea700f4"
+    "revision": "3f2c44856bdd8428dd4a2b57ff3bea6a"
   },
   {
     "url": "page-data/offline-plugin-app-shell-fallback/page-data.json",
@@ -66,12 +66,12 @@ const { NavigationRoute } = workbox.routing
 
 const navigationRoute = new NavigationRoute(async ({ event }) => {
   let { pathname } = new URL(event.request.url)
-  pathname = pathname.replace(new RegExp(`^/a11y-slider`), ``)
+  pathname = pathname.replace(new RegExp(`^`), ``)
 
   // Check for resources + the app bundle
   // The latter may not exist if the SW is updating to a new version
   const resources = await idbKeyval.get(`resources:${pathname}`)
-  if (!resources || !(await caches.match(`/a11y-slider/app-9a077fd912dcd454d82e.js`))) {
+  if (!resources || !(await caches.match(`/app-90f766ab7a85ee0d1b0f.js`))) {
     return await fetch(event.request)
   }
 
@@ -84,7 +84,7 @@ const navigationRoute = new NavigationRoute(async ({ event }) => {
     }
   }
 
-  const offlineShell = `/a11y-slider/offline-plugin-app-shell-fallback/index.html`
+  const offlineShell = `/offline-plugin-app-shell-fallback/index.html`
   return await caches.match(offlineShell)
 })
 
