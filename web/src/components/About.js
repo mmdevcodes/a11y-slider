@@ -4,7 +4,7 @@ import { graphql, useStaticQuery } from 'gatsby';
 import Section from './Section';
 import CodeBlock from './CodeBlock';
 
-export default (props) => {
+export default props => {
   const data = useStaticQuery(graphql`
     query {
       readme {
@@ -17,15 +17,34 @@ export default (props) => {
     <Section {...props}>
       <ReactMarkdown
         source={data.readme.markdown}
+        allowNode={node => {
+          const { type, depth } = node;
+
+          // Leave out the introduction text
+          if (
+            node.children &&
+            node.children.length > 0 &&
+            node.children[0].hasOwnProperty('value') &&
+            node.children[0].value.includes('Library for accessible sliders')
+          ) {
+            return false;
+          }
+
+          // Do not render <h1> tags
+          if (type === 'heading' && depth === 1) return false;
+
+          return true;
+        }}
         renderers={{
           code: CodeBlock,
           table: ({ children }) => {
+            // Wrap table in responsive DIV
             return (
               <div className="table-wrapper">
                 <table>{children}</table>
               </div>
-            )
-          }
+            );
+          },
         }}
         parserOptions={{ gfm: true }}
         escapeHtml={false}

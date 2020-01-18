@@ -21,8 +21,10 @@ export default class Examples extends React.Component {
     render() {
         return (
             <Section {...this.props}>
+                <h1>A11Y Slider</h1>
+                <p>Library for simple and accessible sliders. This is a very early version and the API can possibly change at any time.</p>
                 <h2>Examples</h2>
-                <p>Code coming soon™</p>
+                <small className="custom-small">Code samples coming soon™</small>
                 <ul className="slider example1" ref="_example1">
                     {[...Array(5)].map((e, i) => <li key={i}><div>{i + 1}</div></li>)}
                 </ul>

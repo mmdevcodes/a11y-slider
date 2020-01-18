@@ -187,6 +187,18 @@
 		}
 	}
 
+	.custom-small {
+		display: block;
+		margin: 0 0 2em;
+
+		@at-root h2 + & {
+			@include breakpoint('>=large') {
+				font-size: 0.7em;
+				margin: -1.5em 0 2.5em;
+			}
+		}
+	}
+
 	.align-left {
 		text-align: left;
 	}

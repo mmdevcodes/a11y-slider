@@ -45,3 +45,16 @@
 			}
 
 	}
+
+	.github-corner {
+		opacity: 0.85;
+		mix-blend-mode: overlay;
+		@include vendor('transition', (
+			'opacity #{_duration(transition)} ease',
+		));
+
+		&:hover,
+		&:focus {
+			opacity: 1;
+		}
+	}

@@ -1,4 +1,4 @@
-$slide-gutter: 10px;
+$slide-gutter: 0.2em;
 
 .a11y-slider-container {
     margin: 0 0 5.5em;
@@ -22,7 +22,7 @@ $slide-gutter: 10px;
         div {
             background: _palette(fg);
             color: _palette(bg);
-            padding: 1em;
+            padding: 1em 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -74,6 +74,7 @@ $slide-gutter: 10px;
 
 [data-autoplaying] {
     margin-left: 1em;
+    white-space: normal;
 
     &:hover::after,
     &:focus::after {
@@ -94,5 +95,17 @@ $slide-gutter: 10px;
 
     &[data-autoplaying="false"]::after {
         content: " (Paused)";
+    }
+}
+
+@include breakpoint('<=medium') {
+    .a11y-slider-next,
+    .a11y-slider-prev,
+    .a11y-slider-autoplay {
+        display: block;
+        float: none;
+        width: 100%;
+        margin: 0 0 10px;
+        height: auto;
     }
 }

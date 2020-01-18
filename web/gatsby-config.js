@@ -1,5 +1,4 @@
 module.exports = {
-  pathPrefix: `/a11y-slider/`, // This path is subpath of your hosting https://domain/portfolio
   siteMetadata: {
     title: 'A11Y Slider - Library for simple and accessible sliders',
   },
