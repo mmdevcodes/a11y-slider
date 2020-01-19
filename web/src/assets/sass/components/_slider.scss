@@ -1,10 +1,11 @@
 $slide-gutter: 0.2em;
 
 .a11y-slider-container {
-    margin: 0 0 5.5em;
+    margin: 0 0 4em;
 }
 
 .slider {
+    @extend .a11y-slider;
     display: flex;
     list-style: none;
     margin: 1em 0;
