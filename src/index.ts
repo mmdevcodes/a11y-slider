@@ -1,5 +1,3 @@
-import 'core-js/es/symbol/iterator';
-import 'core-js/es/object/assign';
 import { debounce } from 'ts-debounce';
 import {
     createElement,

@@ -61,10 +61,10 @@ export default (async () => ({
           {
             modules: false,
             targets: {
-              browsers: 'IE 11'
+              ie: 11
             },
-            useBuiltIns: 'entry',
-            corejs: '3.2'
+            useBuiltIns: 'usage',
+            corejs: 3
           }
         ],
         '@babel/typescript'
@@ -73,7 +73,6 @@ export default (async () => ({
         '@babel/plugin-transform-typescript',
         '@babel/plugin-proposal-class-properties'
       ]
-      // include: ['src/**/*']
     }),
     // Extract CSS and create separate file
     postcss({
