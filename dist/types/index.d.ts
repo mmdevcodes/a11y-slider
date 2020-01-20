@@ -1,11 +1,9 @@
-import 'core-js/es/symbol/iterator';
-import 'core-js/es/object/assign';
 import './index.css';
 interface Options {
     container: boolean;
-    navBtns: boolean;
-    prevBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
-    nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
+    arrows: boolean;
+    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
+    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
     dots: boolean;
     adaptiveHeight: boolean;
     skipBtn: boolean;
@@ -24,7 +22,7 @@ export default class A11YSlider {
     private _visibleClass;
     private _dotsClass;
     private _sliderClass;
-    private _hasCustomBtns;
+    private _hasCustomArrows;
     private _focusable;
     private _checkShouldEnableDebounced;
     private _updateHeightDebounced;
@@ -33,6 +31,7 @@ export default class A11YSlider {
     private _autoplayTimer;
     private _autoplayBtn;
     private _pauseOnMouseLeave;
+    private _skipBtns;
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
