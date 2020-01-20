@@ -1,6 +1,6 @@
 {
   "name": "a11y-slider",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Library for accessible sliders",
   "scripts": {
     "dev": "npm run rollup:watch",
@@ -10,7 +10,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "prebuild": "rimraf dist",
     "version": "npm run build && git add *",
-    "release": "np patch && cd web/ && npm run deploy"
+    "release": "np patch && cd web/ && npm run deployLatest"
   },
   "main": "dist/a11y-slider.cjs.js",
   "module": "dist/a11y-slider.esm.js",

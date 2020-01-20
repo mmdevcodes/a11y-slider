@@ -97,6 +97,6 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 #### Todo
 
 - Examples
-- Look into reducing size of bundle
 - Look into not removing width style from slides
 - Add responsive option
+- Make autoprefix run automatically

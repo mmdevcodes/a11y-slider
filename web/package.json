@@ -11,7 +11,7 @@
     "name": "mmahandev"
   },
   "dependencies": {
-    "a11y-slider": "0.0.11",
+    "a11y-slider": "^0.1.1",
     "cross-fetch": "^3.0.4",
     "gatsby": "^2.18.18",
     "gatsby-plugin-manifest": "^2.1.1",
@@ -35,7 +35,8 @@
     "serve": "gatsby serve",
     "clean": "rimraf .cache public",
     "format": "prettier --write '**/*.js'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deployLatest": "npm i a11y-slider@latest --save && npm run deploy"
   },
   "devDependencies": {
     "gh-pages": "^2.2.0",
