@@ -13,9 +13,9 @@ import './index.css';
 
 interface Options {
     container: boolean,
-    navBtns: boolean,
-    prevBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    nextBtn: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    arrows: boolean,
+    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
     dots: boolean,
     adaptiveHeight: boolean,
     skipBtn: boolean,
@@ -36,8 +36,8 @@ enum SlideDirection {
 }
 
 enum SliderState {
-    Enabled,
-    Disabled
+    Enabled = 1,
+    Disabled = 0
 }
 
 enum AutoplaySwitch {
@@ -55,7 +55,7 @@ export default class A11YSlider {
     private _visibleClass: string;
     private _dotsClass: string;
     private _sliderClass: string;
-    private _hasCustomBtns: boolean;
+    private _hasCustomArrows: boolean;
     private _focusable: string;
     private _checkShouldEnableDebounced: any;
     private _updateHeightDebounced: any;
@@ -64,6 +64,7 @@ export default class A11YSlider {
     private _autoplayTimer: IsAutoplaying;
     private _autoplayBtn: HTMLElement;
     private _pauseOnMouseLeave: boolean;
+    private _skipBtns: HTMLElement[];
     public slider: HTMLElement;
     public slides: HTMLCollectionOf<HTMLElement>;
     public dots: HTMLElement | null;
@@ -85,16 +86,17 @@ export default class A11YSlider {
         this._autoplayTimer = IsAutoplaying.No;
         this._autoplayBtn = createElement(`<button type="button" class="a11y-slider-autoplay">Toggle slider autoplay</button>`);
         this._pauseOnMouseLeave = false;
+        this._skipBtns = [];
         this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
         this.sliderEnabled = SliderState.Disabled;
-        this._hasCustomBtns = options && options.prevBtn || options && options.nextBtn ? true : false;
+        this._hasCustomArrows = options && options.prevArrow || options && options.nextArrow ? true : false;
         this.options = {
             container: true,
-            navBtns: true,
-            prevBtn: options && options.prevBtn || createElement('<button type="button" class="a11y-slider-prev">Previous slide</button>'),
-            nextBtn: options && options.nextBtn || createElement('<button type="button" class="a11y-slider-next">Next slide</button>'),
+            arrows: true,
+            prevArrow: options && options.prevArrow || createElement('<button type="button" class="a11y-slider-prev">Previous slide</button>'),
+            nextArrow: options && options.nextArrow || createElement('<button type="button" class="a11y-slider-next">Next slide</button>'),
             dots: true,
             adaptiveHeight: false,
             skipBtn: true,
@@ -157,13 +159,13 @@ export default class A11YSlider {
         }
 
         // Custom buttons should be hidden if not initially enabled
-        if (!shouldEnable && this._hasCustomBtns) {
-            everyElement(this.options.prevBtn, prevBtn => {
-                prevBtn.classList.add('a11y-slider-hide');
+        if (!shouldEnable && this._hasCustomArrows) {
+            everyElement(this.options.prevArrow, prevArrow => {
+                prevArrow.classList.add('a11y-slider-hide');
             });
 
-            everyElement(this.options.nextBtn, nextBtn => {
-                nextBtn.classList.add('a11y-slider-hide');
+            everyElement(this.options.nextArrow, nextArrow => {
+                nextArrow.classList.add('a11y-slider-hide');
             });
         }
     }
@@ -186,36 +188,36 @@ export default class A11YSlider {
         if (this.options.skipBtn) this._addSkipBtn();
 
         // If prev/next buttons are enabled and user isn't using their own add it to the DOM
-        if (this.options.navBtns && !this._hasCustomBtns) {
-            if (this.options.prevBtn instanceof HTMLElement) {
-                this.slider.insertAdjacentElement('beforebegin', this.options.prevBtn);
+        if (this.options.arrows && !this._hasCustomArrows) {
+            if (this.options.prevArrow instanceof HTMLElement) {
+                this.slider.insertAdjacentElement('beforebegin', this.options.prevArrow);
             }
 
-            if (this.options.nextBtn instanceof HTMLElement) {
-                this.slider.insertAdjacentElement('beforebegin', this.options.nextBtn);
+            if (this.options.nextArrow instanceof HTMLElement) {
+                this.slider.insertAdjacentElement('beforebegin', this.options.nextArrow);
             }
         }
 
         // Possible for there to be multiple so need to loop through them all
-        everyElement(this.options.prevBtn, prevBtn => {
+        everyElement(this.options.prevArrow, prevArrow => {
             // Add event listeners for prev/next buttons
-            prevBtn.addEventListener('click', this._handlePrev, { passive: true });
-            prevBtn.addEventListener('keypress', this._handlePrev, { passive: true });
+            prevArrow.addEventListener('click', this._handlePrev, { passive: true });
+            prevArrow.addEventListener('keypress', this._handlePrev, { passive: true });
 
-            if (this._hasCustomBtns) {
+            if (this._hasCustomArrows) {
                 // User generated buttons get special hide class removed
-                prevBtn.classList.remove('a11y-slider-hide');
+                prevArrow.classList.remove('a11y-slider-hide');
             }
         });
 
-        everyElement(this.options.nextBtn, nextBtn => {
+        everyElement(this.options.nextArrow, nextArrow => {
             // Add event listeners for prev/next buttons
-            nextBtn.addEventListener('click', this._handleNext, { passive: true });
-            nextBtn.addEventListener('keypress', this._handleNext, { passive: true });
+            nextArrow.addEventListener('click', this._handleNext, { passive: true });
+            nextArrow.addEventListener('keypress', this._handleNext, { passive: true });
 
-            if (this._hasCustomBtns) {
+            if (this._hasCustomArrows) {
                 // User generated buttons get special hide class removed
-                nextBtn.classList.remove('a11y-slider-hide');
+                nextArrow.classList.remove('a11y-slider-hide');
             }
         });
 
@@ -258,31 +260,31 @@ export default class A11YSlider {
         this._removeSkipBtn();
 
         // Possible for there to be multiple so need to loop through them all
-        everyElement(this.options.prevBtn, prevBtn => {
+        everyElement(this.options.prevArrow, prevArrow => {
             // Remove event listeners for prev/next buttons
-            prevBtn.removeEventListener('click', this._handlePrev);
-            prevBtn.removeEventListener('keypress', this._handlePrev);
+            prevArrow.removeEventListener('click', this._handlePrev);
+            prevArrow.removeEventListener('keypress', this._handlePrev);
 
-            if (!this._hasCustomBtns) {
+            if (!this._hasCustomArrows) {
                 // Only remove generated buttons, not user-defined ones
-                prevBtn.parentNode && prevBtn.parentNode.removeChild(prevBtn);
+                prevArrow.parentNode && prevArrow.parentNode.removeChild(prevArrow);
             } else {
                 // User generated buttons get special hide class removed
-                prevBtn.classList.add('a11y-slider-hide');
+                prevArrow.classList.add('a11y-slider-hide');
             }
         });
 
-        everyElement(this.options.nextBtn, nextBtn => {
+        everyElement(this.options.nextArrow, nextArrow => {
             // Remove event listeners for prev/next buttons
-            nextBtn.removeEventListener('click', this._handleNext);
-            nextBtn.removeEventListener('keypress', this._handleNext);
+            nextArrow.removeEventListener('click', this._handleNext);
+            nextArrow.removeEventListener('keypress', this._handleNext);
 
-            if (!this._hasCustomBtns) {
+            if (!this._hasCustomArrows) {
                 // Only remove generated buttons, not user-defined ones
-                nextBtn.parentNode && nextBtn.parentNode.removeChild(nextBtn);
+                nextArrow.parentNode && nextArrow.parentNode.removeChild(nextArrow);
             } else {
                 // User generated buttons get special hide class removed
-                nextBtn.classList.add('a11y-slider-hide');
+                nextArrow.classList.add('a11y-slider-hide');
             }
         });
 
@@ -441,16 +443,18 @@ export default class A11YSlider {
         // Add to DOM
         this.slider.insertAdjacentElement('beforebegin', beforeEl);
         this.slider.insertAdjacentElement('afterend', afterEl);
+
+        // If skip buttons exist for whatever reason, empty array
+        this._skipBtns = [];
+
+        // Add newly created buttons to library scope
+        this._skipBtns.push(beforeEl, afterEl);
     }
 
     private _removeSkipBtn() {
-        const skipElements = document.querySelectorAll('a11y-slider-sr-only');
-
-        for (let skipElement of skipElements) {
-            if (skipElement instanceof HTMLElement) {
-                skipElement.parentNode && skipElement.parentNode.removeChild(skipElement);
-            }
-        }
+        everyElement(this._skipBtns, skipBtn => {
+            skipBtn.parentNode && skipBtn.parentNode.removeChild(skipBtn);
+        });
     }
 
     private _generateDots() {
@@ -690,11 +694,12 @@ export default class A11YSlider {
 
     private _getActiveAndVisible(explicitActive: HTMLElement | null, callback?: ActiveVisibleSlides) {
         let visibleSlides: HTMLElement[] = [];
+        // better cross browser support by getting subpixels then rounding
+        const sliderWidth = Math.round(this.slider.getBoundingClientRect().width);
+        const sliderPosition = this.slider.scrollLeft;
 
         // Only detects items in the visible viewport of the parent element
         for (let slide of this.slides) {
-            const sliderWidth = this.slider.clientWidth;
-            const sliderPosition = this.slider.scrollLeft;
             const slideOffset = slide.offsetLeft;
 
             if (slideOffset >= sliderPosition && slideOffset < (sliderPosition + sliderWidth)) {

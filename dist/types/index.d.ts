@@ -16,8 +16,8 @@ interface Options {
     centerMode: boolean;
 }
 declare enum SliderState {
-    Enabled = 0,
-    Disabled = 1
+    Enabled = 1,
+    Disabled = 0
 }
 export default class A11YSlider {
     private _activeClass;

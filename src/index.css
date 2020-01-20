@@ -4,7 +4,7 @@
 
 .a11y-slider {
     position: relative;
-    overflow-x: scroll;
+    overflow: hidden;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;

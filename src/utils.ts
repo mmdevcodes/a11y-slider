@@ -46,7 +46,7 @@ export const isInteger = (value: any): boolean => {
 };
 
 // Run a function on all elements even if it's a collection or single
-export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList, callback?: (element: HTMLElement) => void) => {
+export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList | HTMLElement[], callback?: (element: HTMLElement) => void) => {
     const els = elements instanceof HTMLElement ? [elements] : elements;
 
     for (let el of els) {

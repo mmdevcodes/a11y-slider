@@ -42,9 +42,9 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 | Option              | Type             | Description                                                                                                                                                                               |
 | ------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | container           | Boolean          | Default: `true` <br>Adds a container element around the slider                                                                                                                            |
-| navBtns             | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
-| prevBtn             | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
-| nextBtn             | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
+| arrows              | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
+| prevArrow             | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
+| nextArrow             | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
 | dots                | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
 | adaptiveHeight      | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
 | skipBtn             | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
@@ -98,5 +98,5 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 
 - Examples
 - Look into reducing size of bundle
-- Fix \_removeSkipBtn() to not be global
 - Look into not removing width style from slides
+- Add responsive option
