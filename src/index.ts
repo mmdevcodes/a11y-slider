@@ -694,7 +694,8 @@ export default class A11YSlider {
         let visibleSlides: HTMLElement[] = [];
         // better cross browser support by getting subpixels then rounding
         const sliderWidth = Math.round(this.slider.getBoundingClientRect().width);
-        const sliderPosition = this.slider.scrollLeft;
+        // Add a 1 pixel buffer so that subpixels are more consistent cross-browser
+        const sliderPosition = this.slider.scrollLeft - 1 < 0 ? 0 : this.slider.scrollLeft - 1;
 
         // Only detects items in the visible viewport of the parent element
         for (let slide of this.slides) {
