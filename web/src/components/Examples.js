@@ -10,17 +10,21 @@ export default class Examples extends React.Component {
         super(props);
 
         // Enable if running dev:web in the main library for local testing
-        this.useLocalA11Y = false;
+        this.useLocalA11Y = true;
     }
 
     componentDidMount() {
         if (!this.useLocalA11Y) {
             this.initA11YSlider(A11YSlider);
         } else {
-            setTimeout(() => {
-                if (window.A11YSlider !== undefined) {
-                    this.initA11YSlider(window.A11YSlider);
-                }
+            this.sliderLoaded = false;
+
+            window.setInterval(() => {
+                if (this.sliderLoaded === true) return;
+                if (window.A11YSlider === undefined) return;
+
+                this.sliderLoaded = true;
+                this.initA11YSlider(window.A11YSlider);
             }, 1000);
         }
     }
