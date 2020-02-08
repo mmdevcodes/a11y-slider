@@ -4,6 +4,7 @@
   "description": "Library for accessible sliders",
   "scripts": {
     "dev": "npm run rollup:watch",
+    "dev:web": "npm run rollup:watch -- --environment WEB",
     "build": "npm run rollup:build && npm run build:types",
     "rollup:build": "rollup -c",
     "rollup:watch": "rollup -c -w",
