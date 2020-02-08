@@ -43,8 +43,8 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 | ------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | container           | Boolean          | Default: `true` <br>Adds a container element around the slider                                                                                                                            |
 | arrows              | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
-| prevArrow             | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
-| nextArrow             | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
+| prevArrow           | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
+| nextArrow           | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
 | dots                | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
 | adaptiveHeight      | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
 | skipBtn             | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
@@ -53,6 +53,7 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 | autoplaySpeed       | Number           | Default: `4000` <br>Time between slide changes when autoplay is enabled (milliseconds)                                                                                                    |
 | autoplayHoverPause  | Boolean          | Default: `true` <br>If autoplay is enabled then pause when the slider is hovered                                                                                                          |
 | centerMode          | Boolean          | Default: `false` <br>**(EXPERIMENTAL)** Makes the center slide active                                                                                                                    |
+| infinite            | Boolean          | Default: `true` <br>Makes the slider infinitely loop                                                                                                                                      |
 
 ## Methods
 

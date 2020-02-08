@@ -146,12 +146,13 @@
             console.log(e.detail.currentSlide);
         });
 
-        var a11ySlider = new A11YSlider(slider1);
+        var a11ySlider = new A11YSlider(slider1, { infinite: true });
 
         var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
             adaptiveHeight: true,
             autoplay: true,
-            autoplaySpeed: 2000
+            autoplaySpeed: 2000,
+            infinite: false
         });
 
         var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'), {

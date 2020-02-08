@@ -21,7 +21,8 @@ interface Options {
     autoplay: boolean,
     autoplaySpeed: number,
     autoplayHoverPause: boolean,
-    centerMode: boolean
+    centerMode: boolean,
+    infinite: boolean
 }
 
 interface ActiveVisibleSlides {
@@ -104,7 +105,8 @@ export default class A11YSlider {
             autoplay: false,
             autoplaySpeed: 4000,
             autoplayHoverPause: true,
-            centerMode: false
+            centerMode: false,
+            infinite: true
         };
 
         // Set user-inputted options if available
@@ -171,7 +173,7 @@ export default class A11YSlider {
         }
     }
 
-     // Enable all functionality for the slider. Should mirror _disableSlider()
+    // Enable all functionality for the slider. Should mirror _disableSlider()
     private _enableSlider() {
         // Set slider to enabled
         this.sliderEnabled = SliderState.Enabled;
@@ -311,8 +313,8 @@ export default class A11YSlider {
 
     // Add all CSS needed for the slider. Should mirror _removeCSS()
     private _setCSS(activeSlide?: HTMLElement) {
-        // Update items
-        this._updateItemsCSS();
+        // Update slide element CSS
+        this._addSlidesWidth();
 
         // Update slider instance to get the correct elements
         this._getActiveAndVisible(activeSlide || null);
@@ -338,13 +340,13 @@ export default class A11YSlider {
         this._updateDots(this.activeSlide);
 
         // Update all a11y functionality
-        this._addFocusable();
+        this._updateA11Y();
     }
 
     // Remove all CSS needed for the slider. Should mirror _setCSS()
     private _removeCSS() {
         // Remove item CSS if it was set
-        this._removeItemsCSS();
+        this._removeSlidesWidth();
 
         // Remove class to slider
         this.slider.classList.remove(this._sliderClass);
@@ -356,10 +358,11 @@ export default class A11YSlider {
         }
 
         // Remove all a11y functionality
-        this._removeFocusable();
+        this._removeA11Y();
     }
 
-    private _updateItemsCSS() {
+    // If slidesToShow is used then manually add slide widths
+    private _addSlidesWidth() {
         if (isInteger(this.options.slidesToShow)) {
             // Percentage width of each slide
             const slideWidth = 100 / (this.options.slidesToShow as number);
@@ -373,16 +376,12 @@ export default class A11YSlider {
             }
         } else {
             // Reset everything if number of items not explicitly set
-            this.slider.style.removeProperty('display');
-
-            for (let slide of this.slides) {
-                slide.style.removeProperty('width');
-            }
+            this._removeSlidesWidth();
         }
     }
 
-    // Reset item styling even if explicitly set in the options
-    private _removeItemsCSS() {
+    // Reset slide styling even if explicitly set in the options
+    private _removeSlidesWidth() {
         this.slider.style.removeProperty('display');
 
         for (let slide of this.slides) {
@@ -390,10 +389,10 @@ export default class A11YSlider {
         }
     }
 
-    // Makes only the visible items focusable and readable by screenreaders. Should mirror _removeA11Y()
-    private _addFocusable() {
+    // Update all associated a11y functionality. Should mirror _removeA11Y()
+    private _updateA11Y() {
         // Reset all a11y functionality to default beforehand
-        this._removeFocusable();
+        this._removeA11Y();
 
         for (let slide of this.slides) {
             const focusableItems = slide.querySelectorAll(this._focusable);
@@ -410,10 +409,32 @@ export default class A11YSlider {
                 }
             }
         }
+
+        // Buttons will add disabled state if first/last slide
+        if (this.options.infinite === false) {
+            const firstSlide = this.slider.firstElementChild as HTMLElement;
+            const lastSlide = this.slider.lastElementChild as HTMLElement;
+            const firstVisibleSlide = this.visibleSlides[0];
+            const lastVisibleSlide = this.visibleSlides[this.visibleSlides.length - 1];
+
+            // If current active slide is the first element then disable prev
+            if (firstVisibleSlide === firstSlide) {
+                everyElement(this.options.prevArrow, prevArrow => {
+                    prevArrow.setAttribute('disabled', '');
+                });
+            }
+
+            // If current active slide is the last element then disable next
+            if (lastVisibleSlide === lastSlide) {
+                everyElement(this.options.nextArrow, nextArrow => {
+                    nextArrow.setAttribute('disabled', '');
+                });
+            }
+        }
     }
 
-    // Reset a11y attributes for slide wrapper. Should mirror _addA11Y()
-    private _removeFocusable() {
+    // Reset all associated a11y functionality. Should mirror _updateA11Y()
+    private _removeA11Y() {
         for (let slide of this.slides) {
             const focusableItems = slide.querySelectorAll(this._focusable);
 
@@ -426,6 +447,10 @@ export default class A11YSlider {
                 focusableItem.removeAttribute('tabindex');
             }
         }
+
+        // Buttons could potentially have disabled state so removing
+        everyElement(this.options.prevArrow, prevArrow => prevArrow.removeAttribute('disabled'));
+        everyElement(this.options.nextArrow, nextArrow => nextArrow.removeAttribute('disabled'));
     }
 
     private _addSkipBtn() {
@@ -608,14 +633,14 @@ export default class A11YSlider {
             if (direction === SlideDirection.Next) {
                 // Wrap to the first slide if we're currently on the last
                 if (lastVisibleSlide === lastSlide) {
-                    this.scrollToSlide(firstSlide);
+                    this.options.infinite === true && this.scrollToSlide(firstSlide);
                 } else {
                     this.scrollToSlide(activeSlide && activeSlide.nextElementSibling as HTMLElement);
                 }
             } else if (direction === SlideDirection.Prev) {
                 // Wrap to the last slide if we're currently on the first
                 if (firstVisibleSlide === firstSlide) {
-                    this.scrollToSlide(lastSlide);
+                    this.options.infinite === true && this.scrollToSlide(lastSlide);
                 } else {
                     this.scrollToSlide(activeSlide && activeSlide.previousElementSibling as HTMLElement);
                 }
