@@ -100,4 +100,3 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 - Look into not removing width style from slides
 - Add responsive option
 - Make autoprefix run automatically
-- Do not allow more scrolling duration transition

@@ -63,6 +63,7 @@ export default class A11YSlider {
     private _autoplayBtn: HTMLElement;
     private _pauseOnMouseLeave: boolean;
     private _skipBtns: HTMLElement[];
+    private _isScrolling: boolean;
     public slider: HTMLElement;
     public slides: HTMLCollectionOf<HTMLElement>;
     public dots: HTMLElement | null;
@@ -85,6 +86,7 @@ export default class A11YSlider {
         this._autoplayBtn = createElement(`<button type="button" class="a11y-slider-autoplay">Toggle slider autoplay</button>`);
         this._pauseOnMouseLeave = false;
         this._skipBtns = [];
+        this._isScrolling = false;
         this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
@@ -117,7 +119,8 @@ export default class A11YSlider {
         this._updateHeightDebounced = debounce(this._updateHeight.bind(this), 250);
         this._generateDotsDebounced = debounce(this._generateDots.bind(this), 250);
         this._updateScrollPosition = debounce(() => this.scrollToSlide(this.activeSlide), 250);
-        this._handleScroll = debounce(this._handleScroll.bind(this), 175); // May fire twice depending on browser
+        this._handleScroll = debounce(this._handleScroll.bind(this), 10); // Calls _scrollFinish
+        this._scrollFinish = debounce(this._scrollFinish.bind(this), 175); // May fire twice depending on browser
 
         // Initialize slider
         this._init();
@@ -474,7 +477,7 @@ export default class A11YSlider {
 
             // Event handlers to switch to slide
             const switchToSlide = (event: Event) => {
-                if (a11yClick(event) === true) {
+                if (a11yClick(event) === true && this._isScrolling === false) {
                     // Go to slide
                     this.scrollToSlide(this.slides[i]);
 
@@ -720,7 +723,7 @@ export default class A11YSlider {
     }
 
     private _handlePrev(event: Event) {
-        if (a11yClick(event) === true) {
+        if (a11yClick(event) === true && this._isScrolling === false) {
             // Go to previous slide
             this._goPrevOrNext(SlideDirection.Prev);
 
@@ -730,7 +733,7 @@ export default class A11YSlider {
     }
 
     private _handleNext(event: Event) {
-        if (a11yClick(event) === true) {
+        if (a11yClick(event) === true && this._isScrolling === false) {
             // Go to next slide
             this._goPrevOrNext(SlideDirection.Next);
 
@@ -764,6 +767,17 @@ export default class A11YSlider {
     }
 
     private _handleScroll() {
+        // Globally set the slider as scrolling
+        this._isScrolling = true;
+
+        // This is a debounced function. Will fire once done scrolling
+        this._scrollFinish();
+    }
+
+    private _scrollFinish() {
+        // Globally set the slider as not scrolling
+        this._isScrolling = false;
+
         // Update CSS
         this._setCSS();
 
