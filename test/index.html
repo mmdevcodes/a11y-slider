@@ -32,7 +32,6 @@
             /* border: 2px solid rebeccapurple; */
             margin: 10px 0 20px;
             padding: 0;
-            width: 50vw;
             text-align: center;
             font-weight: bold;
             font-size: 50px;
@@ -107,6 +106,10 @@
 
         #s-2>*:nth-child(odd) {
             height: 50px;
+        }
+
+        #s-4>* {
+            width: 100%;
         }
 
         @media (min-width: 768px) {
@@ -240,6 +243,7 @@
                     dots: true
                 },
                 768: {
+                    slidesToShow: 3,
                     arrows: true
                 },
                 960: {

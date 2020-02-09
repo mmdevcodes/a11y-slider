@@ -158,13 +158,15 @@ export default class A11YSlider {
         // If 1 or less slides exist then a slider is not needed
         if (this.slides.length <= 1) shouldEnable = false;
 
-        // If there are no slides outside the slider's viewport a slider is not needed
-        this._getActiveAndVisible(null, (visibleSlides: HTMLElement[]) => {
-            if (visibleSlides.length === this.slides.length) shouldEnable = false;
-        });
-
         // If user explicitly set slides to be shown and it's the same number as available
-        if (this.slides.length === this.options.slidesToShow) shouldEnable = false;
+        if (isInteger(this.options.slidesToShow)) {
+            if (this.slides.length === this.options.slidesToShow) shouldEnable = false;
+        } else {
+            // If there are no slides outside the slider's viewport a slider is not needed
+            this._getActiveAndVisible(null, (visibleSlides: HTMLElement[]) => {
+                if (visibleSlides.length === this.slides.length) shouldEnable = false;
+            });
+        }
 
         // Enable/disable slider based on above requirements
         if (shouldEnable && this.sliderEnabled === SliderState.Disabled) {
