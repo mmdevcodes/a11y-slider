@@ -4,30 +4,11 @@ import {
     a11yClick,
     crossCustomEvent,
     isInteger,
+    isObject,
     everyElement,
     getSubpixelStyle
 } from './utils';
 import './index.css';
-
-interface Options {
-    container: boolean,
-    arrows: boolean,
-    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    dots: boolean,
-    adaptiveHeight: boolean,
-    skipBtn: boolean,
-    slidesToShow: number | false,
-    autoplay: boolean,
-    autoplaySpeed: number,
-    autoplayHoverPause: boolean,
-    centerMode: boolean,
-    infinite: boolean
-}
-
-interface ActiveVisibleSlides {
-    (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
-}
 
 enum SlideDirection {
     Prev,
@@ -47,6 +28,28 @@ enum AutoplaySwitch {
 enum IsAutoplaying {
     Yes,
     No = 0
+}
+
+interface ActiveVisibleSlides {
+    (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
+}
+
+interface Options {
+    container: boolean,
+    arrows: boolean,
+    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    dots: boolean,
+    adaptiveHeight: boolean,
+    skipBtn: boolean,
+    slidesToShow: number | null,
+    autoplay: boolean,
+    autoplaySpeed: number,
+    autoplayHoverPause: boolean,
+    centerMode: boolean,
+    infinite: boolean,
+    disable: boolean,
+    responsive: object | null
 }
 
 export default class A11YSlider {
@@ -101,12 +104,14 @@ export default class A11YSlider {
             dots: true,
             adaptiveHeight: false,
             skipBtn: true,
-            slidesToShow: false,
+            slidesToShow: null,
             autoplay: false,
             autoplaySpeed: 4000,
             autoplayHoverPause: true,
             centerMode: false,
-            infinite: true
+            infinite: true,
+            disable: false,
+            responsive: null
         };
 
         // Set user-inputted options if available
@@ -128,7 +133,11 @@ export default class A11YSlider {
         this._init();
     }
 
+    // Initialize the slider, should mirror destroy()
     private _init() {
+        // Generate listeners for responsive options if added
+        if (isObject(this.options.responsive)) this._checkResponsive();
+
         // Check if the slider should be initialized depending on slides shown
         this._checkShouldEnable();
 
@@ -143,6 +152,9 @@ export default class A11YSlider {
     private _checkShouldEnable() {
         let shouldEnable: boolean = true;
 
+        // If user specified to disable (usually for responsive or updateOptions)
+        if (this.options.disable === true) shouldEnable = false;
+
         // If 1 or less slides exist then a slider is not needed
         if (this.slides.length <= 1) shouldEnable = false;
 
@@ -151,7 +163,7 @@ export default class A11YSlider {
             if (visibleSlides.length === this.slides.length) shouldEnable = false;
         });
 
-        // If user explicitly set items to be shown and it's the same number as available
+        // If user explicitly set slides to be shown and it's the same number as available
         if (this.slides.length === this.options.slidesToShow) shouldEnable = false;
 
         // Enable/disable slider based on above requirements
@@ -361,6 +373,73 @@ export default class A11YSlider {
         this._removeA11Y();
     }
 
+    // Add event listeners for breakpoints
+    private _checkResponsive() {
+        if (!isObject(this.options.responsive)) return;
+
+        const { responsive, ...initialOptions } = this.options;
+        const breakpoints: Array<{ mql: MediaQueryList, options: Options }> = [];
+
+        // Sort media queries from lowest to highest
+        const responsiveOptions = Object
+            .entries(this.options.responsive as object)
+            .sort((a, b) => {
+                if (a[0] < b[0]) { return -1; }
+                if (a[0] > b[0]) { return 1; }
+
+                return 0;
+            });
+
+        // Create a new JS media query for initial options for the lowest MQ and down
+        breakpoints.push({
+            mql: window.matchMedia(`screen and (max-width: ${Number.parseInt(responsiveOptions[0][0]) - 1}px)`),
+            options: initialOptions as Options
+        });
+
+        // Loop through all responsive objects and generate a JS media query
+        responsiveOptions.forEach(([breakpoint, breakpointOptions]: [string, Options], i) => {
+            let options: Options = { ...this.options };
+            let mqlString = `screen and (min-width: ${breakpoint}px)`;
+
+            // If there are more media queries after this then create a stopping point
+            if (i !== responsiveOptions.length - 1) {
+                mqlString = mqlString.concat(` and (max-width: ${Number.parseInt(responsiveOptions[i + 1][0]) - 1}px)`);
+            }
+
+            // Create a layer cake of options from the lowest breakpoint to the highest
+            breakpoints.forEach((breakpoint, i) => {
+                Object.assign(options, breakpoint.options);
+            });
+
+            // Add this specific breakpoint to the top of the cake 🎂
+            Object.assign(options, breakpointOptions);
+
+            breakpoints.push({
+                mql: window.matchMedia(mqlString),
+                options
+            });
+        });
+
+        // For each JS media query add an event listener
+        breakpoints.map(breakpoint => {
+            /**
+            * This should in theory be running at the initialization
+            * so make sure the correct options are set.
+            */
+            if (breakpoint.mql.matches) {
+                Object.assign(this.options, breakpoint.options);
+            }
+
+            // Creates a media query listener
+            breakpoint.mql.addListener(() => {
+                if (breakpoint.mql.matches) {
+                    // Update slider with new options
+                    this.updateOptions(breakpoint.options);
+                }
+            });
+        });
+    }
+
     // If slidesToShow is used then manually add slide widths
     private _addSlidesWidth() {
         if (isInteger(this.options.slidesToShow)) {
@@ -484,6 +563,8 @@ export default class A11YSlider {
     }
 
     private _generateDots() {
+        if (this.options.dots === false) return;
+
         // Remove dots if they already exist
         this._removeDots();
 
@@ -823,6 +904,8 @@ export default class A11YSlider {
      * Nuke the slider
      */
     public destroy() {
+        // TODO: Removal of responsive event listeners should go here
+
         // Undos everything from _enableSlider()
         this._disableSlider();
 

@@ -45,6 +45,10 @@ export const isInteger = (value: any): boolean => {
     Math.floor(value) === value;
 };
 
+export const isObject = (value: any): boolean => {
+    return typeof value === 'object' && value !== null;
+};
+
 // Run a function on all elements even if it's a collection or single
 export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList | HTMLElement[], callback?: (element: HTMLElement) => void) => {
     const els = elements instanceof HTMLElement ? [elements] : elements;
