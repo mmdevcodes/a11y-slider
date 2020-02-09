@@ -634,10 +634,10 @@ export default class A11YSlider {
             }
 
             // Reset children active class if exist
-            for (let dot of this.dots.children) dot.querySelector('button')!.classList.remove('active');
+            for (let dot of this.dots.children) dot.querySelector('button')?.classList.remove('active');
 
             // Add class to active dot
-            this.dots.children[activeIndex].querySelector('button')!.classList.add('active');
+            this.dots.children[activeIndex].querySelector('button')?.classList.add('active');
         }
     }
 

@@ -72,7 +72,8 @@ export default (async () => ({
       ],
       plugins: [
         '@babel/plugin-transform-typescript',
-        '@babel/plugin-proposal-class-properties'
+        '@babel/plugin-proposal-class-properties',
+        '@babel/plugin-proposal-optional-chaining'
       ]
     }),
     // Extract CSS and create separate file
