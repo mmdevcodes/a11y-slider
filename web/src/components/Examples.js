@@ -10,7 +10,7 @@ export default class Examples extends React.Component {
         super(props);
 
         // Enable if running dev:web in the main library for local testing
-        this.useLocalA11Y = true;
+        this.useLocalA11Y = false;
     }
 
     componentDidMount() {
