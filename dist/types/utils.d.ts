@@ -8,6 +8,7 @@ export declare const createElement: (html: string) => HTMLElement;
 export declare const a11yClick: (event: any) => boolean;
 export declare const crossCustomEvent: (event: string, params: any) => CustomEvent<any>;
 export declare const isInteger: (value: any) => boolean;
+export declare const isObject: (value: any) => boolean;
 export declare const everyElement: (elements: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList | HTMLElement[], callback?: ((element: HTMLElement) => void) | undefined) => void;
 /**
  * Get computed width/height with subpixels

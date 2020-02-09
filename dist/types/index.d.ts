@@ -1,4 +1,8 @@
 import './index.css';
+declare enum SliderState {
+    Enabled = 1,
+    Disabled = 0
+}
 interface Options {
     container: boolean;
     arrows: boolean;
@@ -7,15 +11,14 @@ interface Options {
     dots: boolean;
     adaptiveHeight: boolean;
     skipBtn: boolean;
-    slidesToShow: number | false;
+    slidesToShow: number | null;
     autoplay: boolean;
     autoplaySpeed: number;
     autoplayHoverPause: boolean;
     centerMode: boolean;
-}
-declare enum SliderState {
-    Enabled = 1,
-    Disabled = 0
+    infinite: boolean;
+    disable: boolean;
+    responsive: object | null;
 }
 export default class A11YSlider {
     private _activeClass;
@@ -32,6 +35,7 @@ export default class A11YSlider {
     private _autoplayBtn;
     private _pauseOnMouseLeave;
     private _skipBtns;
+    private _isScrolling;
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
@@ -47,10 +51,11 @@ export default class A11YSlider {
     private _disableSlider;
     private _setCSS;
     private _removeCSS;
-    private _updateItemsCSS;
-    private _removeItemsCSS;
-    private _addFocusable;
-    private _removeFocusable;
+    private _checkResponsive;
+    private _addSlidesWidth;
+    private _removeSlidesWidth;
+    private _updateA11Y;
+    private _removeA11Y;
     private _addSkipBtn;
     private _removeSkipBtn;
     private _generateDots;
@@ -81,6 +86,7 @@ export default class A11YSlider {
     private _handleAutoplay;
     private _handleAutoplayHover;
     private _handleScroll;
+    private _scrollFinish;
     private _dispatchEvent;
     /**
      * Nuke the slider
