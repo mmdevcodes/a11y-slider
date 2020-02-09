@@ -385,12 +385,7 @@ export default class A11YSlider {
         // Sort media queries from lowest to highest
         const responsiveOptions = Object
             .entries(this.options.responsive as object)
-            .sort((a, b) => {
-                if (a[0] < b[0]) { return -1; }
-                if (a[0] > b[0]) { return 1; }
-
-                return 0;
-            });
+            .sort((a, b) => a[1] - b[1]);
 
         // Create a new JS media query for initial options for the lowest MQ and down
         breakpoints.push({
