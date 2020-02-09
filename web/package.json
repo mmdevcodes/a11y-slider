@@ -11,7 +11,7 @@
     "name": "mmahandev"
   },
   "dependencies": {
-    "a11y-slider": "^0.1.1",
+    "a11y-slider": "^0.3.0",
     "cross-fetch": "^3.0.4",
     "gatsby": "^2.18.18",
     "gatsby-plugin-manifest": "^2.1.1",
@@ -36,7 +36,7 @@
     "clean": "rimraf .cache public",
     "format": "prettier --write '**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "git": "git add . && git commit -m 'Update A11YSlider' && git push --all",
+    "git": "git add . && git commit -m \"Update A11YSlider\" && git push --all",
     "deployLatest": "npm i a11y-slider@latest --save && npm run deploy && npm run git"
   },
   "devDependencies": {
