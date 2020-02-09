@@ -43,16 +43,45 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 | ------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | container           | Boolean          | Default: `true` <br>Adds a container element around the slider                                                                                                                            |
 | arrows              | Boolean          | Default: `true` <br>Enables prev/next button                                                                                                                                              |
-| prevArrow             | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
-| nextArrow             | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
+| prevArrow           | Node \| NodeList | Default: `<button>` <br>Button to trigger previous slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                     |
+| nextArrow           | Node \| NodeList | Default: `<button>` <br>Button to trigger next slide. A11YSlider will generate one by default. Can one or multiple HTML elements.                                                         |
 | dots                | Boolean          | Default: `true` <br>Generate navigation dots                                                                                                                                              |
 | adaptiveHeight      | Boolean          | Default: `false` <br>Height of slider container changes according to each slide's height                                                                                                  |
 | skipBtn             | Boolean          | Default: `true` <br>Adds a skip button before the slider for a11y devices (Can be seen by tabbing)                                                                                        |
-| slidesToShow        | Number \| False  | Default: `false` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you. |
+| slidesToShow        | Number \| Null   | Default: `null` <br>The total number of items to be shown. By default A11YSlider will work by default based off your CSS styling. This option hardcodes the width into the HTML for you.  |
 | autoplay            | Boolean          | Default: `false` <br>Enables the automatic change of slides                                                                                                                               |
 | autoplaySpeed       | Number           | Default: `4000` <br>Time between slide changes when autoplay is enabled (milliseconds)                                                                                                    |
 | autoplayHoverPause  | Boolean          | Default: `true` <br>If autoplay is enabled then pause when the slider is hovered                                                                                                          |
 | centerMode          | Boolean          | Default: `false` <br>**(EXPERIMENTAL)** Makes the center slide active                                                                                                                    |
+| infinite            | Boolean          | Default: `true` <br>Makes the slider infinitely loop                                                                                                                                      |
+| disable             | Boolean          | Default: `false` <br>Disables the slider                                                                                                                                                  |
+| responsive          | Object \| Null   | Default: `null` <br>Define options for different viewport widths. See [responsive example](#responsive-option-example)                                                                    |
+
+### Responsive Option Example
+
+You can have different options by specifying a viewport width. This always work with the mobile-first (think min-width). Your initial options outside of the `responsive` object will work from your lowest specified viewport and down.
+
+```js
+const slider = new A11YSlider(document.querySelector('.slider'), {
+  slidesToShow: 1,
+  arrows: false,
+  dots: false,
+  disable: true, // disables on 479px and down
+  responsive: {
+      480: {
+        slidesToShow: 2,
+        dots: true,
+        disable: false, // enables on 480px and up
+      },
+      768: {
+          arrows: true
+      },
+      960: {
+          slidesToShow: 4
+      }
+  }
+});
+```
 
 ## Methods
 
@@ -65,8 +94,8 @@ slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
 | ------------- | ----------------------------------- | --------------------------------------------------------- |
 | scrollToSlide | Element                             | Scrolls slider to specified element                       |
 | updateOptions | Object                              | Enter new set of options (reloads slider)                 |
-| refreshHeight |                               | Sets height of slider to height of the current active slide                 |
-| destroy       | currentSlide, nextSlide, a11yslider | Removes everything that the A11YSlider created in the DOM |
+| refreshHeight |                                   | Sets height of slider to height of the current active slide |
+| destroy       |                                     | Removes everything that the A11YSlider created in the DOM |
 
 ## Events
 
@@ -98,5 +127,5 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 
 - Examples
 - Look into not removing width style from slides
-- Add responsive option
 - Make autoprefix run automatically
+- Better resize throttling

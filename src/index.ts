@@ -4,29 +4,11 @@ import {
     a11yClick,
     crossCustomEvent,
     isInteger,
+    isObject,
     everyElement,
     getSubpixelStyle
 } from './utils';
 import './index.css';
-
-interface Options {
-    container: boolean,
-    arrows: boolean,
-    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    dots: boolean,
-    adaptiveHeight: boolean,
-    skipBtn: boolean,
-    slidesToShow: number | false,
-    autoplay: boolean,
-    autoplaySpeed: number,
-    autoplayHoverPause: boolean,
-    centerMode: boolean
-}
-
-interface ActiveVisibleSlides {
-    (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
-}
 
 enum SlideDirection {
     Prev,
@@ -48,6 +30,28 @@ enum IsAutoplaying {
     No = 0
 }
 
+interface ActiveVisibleSlides {
+    (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
+}
+
+interface Options {
+    container: boolean,
+    arrows: boolean,
+    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    dots: boolean,
+    adaptiveHeight: boolean,
+    skipBtn: boolean,
+    slidesToShow: number | null,
+    autoplay: boolean,
+    autoplaySpeed: number,
+    autoplayHoverPause: boolean,
+    centerMode: boolean,
+    infinite: boolean,
+    disable: boolean,
+    responsive: object | null
+}
+
 export default class A11YSlider {
     private _activeClass: string;
     private _visibleClass: string;
@@ -63,6 +67,7 @@ export default class A11YSlider {
     private _autoplayBtn: HTMLElement;
     private _pauseOnMouseLeave: boolean;
     private _skipBtns: HTMLElement[];
+    private _isScrolling: boolean;
     public slider: HTMLElement;
     public slides: HTMLCollectionOf<HTMLElement>;
     public dots: HTMLElement | null;
@@ -85,6 +90,7 @@ export default class A11YSlider {
         this._autoplayBtn = createElement(`<button type="button" class="a11y-slider-autoplay">Toggle slider autoplay</button>`);
         this._pauseOnMouseLeave = false;
         this._skipBtns = [];
+        this._isScrolling = false;
         this.dots = null;
         this.activeSlide = this.slides[0];
         this.visibleSlides = [];
@@ -98,11 +104,14 @@ export default class A11YSlider {
             dots: true,
             adaptiveHeight: false,
             skipBtn: true,
-            slidesToShow: false,
+            slidesToShow: null,
             autoplay: false,
             autoplaySpeed: 4000,
             autoplayHoverPause: true,
-            centerMode: false
+            centerMode: false,
+            infinite: true,
+            disable: false,
+            responsive: null
         };
 
         // Set user-inputted options if available
@@ -117,13 +126,18 @@ export default class A11YSlider {
         this._updateHeightDebounced = debounce(this._updateHeight.bind(this), 250);
         this._generateDotsDebounced = debounce(this._generateDots.bind(this), 250);
         this._updateScrollPosition = debounce(() => this.scrollToSlide(this.activeSlide), 250);
-        this._handleScroll = debounce(this._handleScroll.bind(this), 175); // May fire twice depending on browser
+        this._handleScroll = debounce(this._handleScroll.bind(this), 10); // Calls _scrollFinish
+        this._scrollFinish = debounce(this._scrollFinish.bind(this), 175); // May fire twice depending on browser
 
         // Initialize slider
         this._init();
     }
 
+    // Initialize the slider, should mirror destroy()
     private _init() {
+        // Generate listeners for responsive options if added
+        if (isObject(this.options.responsive)) this._checkResponsive();
+
         // Check if the slider should be initialized depending on slides shown
         this._checkShouldEnable();
 
@@ -138,6 +152,9 @@ export default class A11YSlider {
     private _checkShouldEnable() {
         let shouldEnable: boolean = true;
 
+        // If user specified to disable (usually for responsive or updateOptions)
+        if (this.options.disable === true) shouldEnable = false;
+
         // If 1 or less slides exist then a slider is not needed
         if (this.slides.length <= 1) shouldEnable = false;
 
@@ -146,7 +163,7 @@ export default class A11YSlider {
             if (visibleSlides.length === this.slides.length) shouldEnable = false;
         });
 
-        // If user explicitly set items to be shown and it's the same number as available
+        // If user explicitly set slides to be shown and it's the same number as available
         if (this.slides.length === this.options.slidesToShow) shouldEnable = false;
 
         // Enable/disable slider based on above requirements
@@ -168,7 +185,7 @@ export default class A11YSlider {
         }
     }
 
-     // Enable all functionality for the slider. Should mirror _disableSlider()
+    // Enable all functionality for the slider. Should mirror _disableSlider()
     private _enableSlider() {
         // Set slider to enabled
         this.sliderEnabled = SliderState.Enabled;
@@ -308,8 +325,8 @@ export default class A11YSlider {
 
     // Add all CSS needed for the slider. Should mirror _removeCSS()
     private _setCSS(activeSlide?: HTMLElement) {
-        // Update items
-        this._updateItemsCSS();
+        // Update slide element CSS
+        this._addSlidesWidth();
 
         // Update slider instance to get the correct elements
         this._getActiveAndVisible(activeSlide || null);
@@ -335,13 +352,13 @@ export default class A11YSlider {
         this._updateDots(this.activeSlide);
 
         // Update all a11y functionality
-        this._addFocusable();
+        this._updateA11Y();
     }
 
     // Remove all CSS needed for the slider. Should mirror _setCSS()
     private _removeCSS() {
         // Remove item CSS if it was set
-        this._removeItemsCSS();
+        this._removeSlidesWidth();
 
         // Remove class to slider
         this.slider.classList.remove(this._sliderClass);
@@ -353,10 +370,78 @@ export default class A11YSlider {
         }
 
         // Remove all a11y functionality
-        this._removeFocusable();
+        this._removeA11Y();
     }
 
-    private _updateItemsCSS() {
+    // Add event listeners for breakpoints
+    private _checkResponsive() {
+        if (!isObject(this.options.responsive)) return;
+
+        const { responsive, ...initialOptions } = this.options;
+        const breakpoints: Array<{ mql: MediaQueryList, options: Options }> = [];
+
+        // Sort media queries from lowest to highest
+        const responsiveOptions = Object
+            .entries(this.options.responsive as object)
+            .sort((a, b) => {
+                if (a[0] < b[0]) { return -1; }
+                if (a[0] > b[0]) { return 1; }
+
+                return 0;
+            });
+
+        // Create a new JS media query for initial options for the lowest MQ and down
+        breakpoints.push({
+            mql: window.matchMedia(`screen and (max-width: ${Number.parseInt(responsiveOptions[0][0]) - 1}px)`),
+            options: initialOptions as Options
+        });
+
+        // Loop through all responsive objects and generate a JS media query
+        responsiveOptions.forEach(([breakpoint, breakpointOptions]: [string, Options], i) => {
+            let options: Options = { ...this.options };
+            let mqlString = `screen and (min-width: ${breakpoint}px)`;
+
+            // If there are more media queries after this then create a stopping point
+            if (i !== responsiveOptions.length - 1) {
+                mqlString = mqlString.concat(` and (max-width: ${Number.parseInt(responsiveOptions[i + 1][0]) - 1}px)`);
+            }
+
+            // Create a layer cake of options from the lowest breakpoint to the highest
+            breakpoints.forEach((breakpoint, i) => {
+                Object.assign(options, breakpoint.options);
+            });
+
+            // Add this specific breakpoint to the top of the cake 🎂
+            Object.assign(options, breakpointOptions);
+
+            breakpoints.push({
+                mql: window.matchMedia(mqlString),
+                options
+            });
+        });
+
+        // For each JS media query add an event listener
+        breakpoints.map(breakpoint => {
+            /**
+            * This should in theory be running at the initialization
+            * so make sure the correct options are set.
+            */
+            if (breakpoint.mql.matches) {
+                Object.assign(this.options, breakpoint.options);
+            }
+
+            // Creates a media query listener
+            breakpoint.mql.addListener(() => {
+                if (breakpoint.mql.matches) {
+                    // Update slider with new options
+                    this.updateOptions(breakpoint.options);
+                }
+            });
+        });
+    }
+
+    // If slidesToShow is used then manually add slide widths
+    private _addSlidesWidth() {
         if (isInteger(this.options.slidesToShow)) {
             // Percentage width of each slide
             const slideWidth = 100 / (this.options.slidesToShow as number);
@@ -370,16 +455,12 @@ export default class A11YSlider {
             }
         } else {
             // Reset everything if number of items not explicitly set
-            this.slider.style.removeProperty('display');
-
-            for (let slide of this.slides) {
-                slide.style.removeProperty('width');
-            }
+            this._removeSlidesWidth();
         }
     }
 
-    // Reset item styling even if explicitly set in the options
-    private _removeItemsCSS() {
+    // Reset slide styling even if explicitly set in the options
+    private _removeSlidesWidth() {
         this.slider.style.removeProperty('display');
 
         for (let slide of this.slides) {
@@ -387,10 +468,10 @@ export default class A11YSlider {
         }
     }
 
-    // Makes only the visible items focusable and readable by screenreaders. Should mirror _removeA11Y()
-    private _addFocusable() {
+    // Update all associated a11y functionality. Should mirror _removeA11Y()
+    private _updateA11Y() {
         // Reset all a11y functionality to default beforehand
-        this._removeFocusable();
+        this._removeA11Y();
 
         for (let slide of this.slides) {
             const focusableItems = slide.querySelectorAll(this._focusable);
@@ -407,10 +488,32 @@ export default class A11YSlider {
                 }
             }
         }
+
+        // Buttons will add disabled state if first/last slide
+        if (this.options.infinite === false) {
+            const firstSlide = this.slider.firstElementChild as HTMLElement;
+            const lastSlide = this.slider.lastElementChild as HTMLElement;
+            const firstVisibleSlide = this.visibleSlides[0];
+            const lastVisibleSlide = this.visibleSlides[this.visibleSlides.length - 1];
+
+            // If current active slide is the first element then disable prev
+            if (firstVisibleSlide === firstSlide) {
+                everyElement(this.options.prevArrow, prevArrow => {
+                    prevArrow.setAttribute('disabled', '');
+                });
+            }
+
+            // If current active slide is the last element then disable next
+            if (lastVisibleSlide === lastSlide) {
+                everyElement(this.options.nextArrow, nextArrow => {
+                    nextArrow.setAttribute('disabled', '');
+                });
+            }
+        }
     }
 
-    // Reset a11y attributes for slide wrapper. Should mirror _addA11Y()
-    private _removeFocusable() {
+    // Reset all associated a11y functionality. Should mirror _updateA11Y()
+    private _removeA11Y() {
         for (let slide of this.slides) {
             const focusableItems = slide.querySelectorAll(this._focusable);
 
@@ -423,6 +526,10 @@ export default class A11YSlider {
                 focusableItem.removeAttribute('tabindex');
             }
         }
+
+        // Buttons could potentially have disabled state so removing
+        everyElement(this.options.prevArrow, prevArrow => prevArrow.removeAttribute('disabled'));
+        everyElement(this.options.nextArrow, nextArrow => nextArrow.removeAttribute('disabled'));
     }
 
     private _addSkipBtn() {
@@ -456,6 +563,8 @@ export default class A11YSlider {
     }
 
     private _generateDots() {
+        if (this.options.dots === false) return;
+
         // Remove dots if they already exist
         this._removeDots();
 
@@ -474,7 +583,7 @@ export default class A11YSlider {
 
             // Event handlers to switch to slide
             const switchToSlide = (event: Event) => {
-                if (a11yClick(event) === true) {
+                if (a11yClick(event) === true && this._isScrolling === false) {
                     // Go to slide
                     this.scrollToSlide(this.slides[i]);
 
@@ -605,14 +714,14 @@ export default class A11YSlider {
             if (direction === SlideDirection.Next) {
                 // Wrap to the first slide if we're currently on the last
                 if (lastVisibleSlide === lastSlide) {
-                    this.scrollToSlide(firstSlide);
+                    this.options.infinite === true && this.scrollToSlide(firstSlide);
                 } else {
                     this.scrollToSlide(activeSlide && activeSlide.nextElementSibling as HTMLElement);
                 }
             } else if (direction === SlideDirection.Prev) {
                 // Wrap to the last slide if we're currently on the first
                 if (firstVisibleSlide === firstSlide) {
-                    this.scrollToSlide(lastSlide);
+                    this.options.infinite === true && this.scrollToSlide(lastSlide);
                 } else {
                     this.scrollToSlide(activeSlide && activeSlide.previousElementSibling as HTMLElement);
                 }
@@ -694,7 +803,8 @@ export default class A11YSlider {
         let visibleSlides: HTMLElement[] = [];
         // better cross browser support by getting subpixels then rounding
         const sliderWidth = Math.round(this.slider.getBoundingClientRect().width);
-        const sliderPosition = this.slider.scrollLeft;
+        // Add a 1 pixel buffer so that subpixels are more consistent cross-browser
+        const sliderPosition = this.slider.scrollLeft - 1 < 0 ? 0 : this.slider.scrollLeft - 1;
 
         // Only detects items in the visible viewport of the parent element
         for (let slide of this.slides) {
@@ -719,7 +829,7 @@ export default class A11YSlider {
     }
 
     private _handlePrev(event: Event) {
-        if (a11yClick(event) === true) {
+        if (a11yClick(event) === true && this._isScrolling === false) {
             // Go to previous slide
             this._goPrevOrNext(SlideDirection.Prev);
 
@@ -729,7 +839,7 @@ export default class A11YSlider {
     }
 
     private _handleNext(event: Event) {
-        if (a11yClick(event) === true) {
+        if (a11yClick(event) === true && this._isScrolling === false) {
             // Go to next slide
             this._goPrevOrNext(SlideDirection.Next);
 
@@ -763,6 +873,17 @@ export default class A11YSlider {
     }
 
     private _handleScroll() {
+        // Globally set the slider as scrolling
+        this._isScrolling = true;
+
+        // This is a debounced function. Will fire once done scrolling
+        this._scrollFinish();
+    }
+
+    private _scrollFinish() {
+        // Globally set the slider as not scrolling
+        this._isScrolling = false;
+
         // Update CSS
         this._setCSS();
 
@@ -783,6 +904,8 @@ export default class A11YSlider {
      * Nuke the slider
      */
     public destroy() {
+        // TODO: Removal of responsive event listeners should go here
+
         // Undos everything from _enableSlider()
         this._disableSlider();
 

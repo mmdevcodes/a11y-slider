@@ -1,17 +1,32 @@
 import React from 'react';
 import A11YSlider from 'a11y-slider';
 import Section from './Section';
+import Helmet from 'react-helmet';
+import { withPrefix } from "gatsby"
 
 // https://reactjs.org/docs/integrating-with-other-libraries.html
 export default class Examples extends React.Component {
     constructor(props) {
         super(props);
+
+        // Enable if running dev:web in the main library for local testing
+        this.useLocalA11Y = true;
     }
 
     componentDidMount() {
-        this.slider1 = new A11YSlider(this.example1);
-        this.slider2 = new A11YSlider(this.example2);
-        this.slider3 = new A11YSlider(this.example3, { autoplay: true, autoplaySpeed: 2500 });
+        if (!this.useLocalA11Y) {
+            this.initA11YSlider(A11YSlider);
+        } else {
+            this.sliderLoaded = false;
+
+            window.setInterval(() => {
+                if (this.sliderLoaded === true) return;
+                if (window.A11YSlider === undefined) return;
+
+                this.sliderLoaded = true;
+                this.initA11YSlider(window.A11YSlider);
+            }, 1000);
+        }
     }
 
     componentWillUnmount() {
@@ -20,9 +35,20 @@ export default class Examples extends React.Component {
         this.slider3.destroy();
     }
 
+    initA11YSlider(A11YLibrary) {
+        this.slider1 = new A11YLibrary(this.example1);
+        this.slider2 = new A11YLibrary(this.example2);
+        this.slider3 = new A11YLibrary(this.example3, { autoplay: true, autoplaySpeed: 2500 });
+    }
+
     render() {
         return (
             <Section {...this.props}>
+                {this.useLocalA11Y && (
+                    <Helmet>
+                        <script src={withPrefix('a11y-slider.js')} type="text/javascript" />
+                    </Helmet>
+                )}
                 <h1>A11Y Slider</h1>
                 <p>Library for simple and accessible sliders. This is a very early version and the API can possibly change at any time.</p>
                 <h2>Examples</h2>

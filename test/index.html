@@ -114,7 +114,7 @@
         <li>4</li>
         <li>5</li>
     </ul>
-    <h2>Regular slider (specify show 4 via JS)</h2>
+    <h2>Regular slider (Responsive enabled | 4 at 960px)</h2>
     <ul id="s-3" class="slider">
         <li>1</li>
         <li>2</li>
@@ -146,16 +146,35 @@
             console.log(e.detail.currentSlide);
         });
 
-        var a11ySlider = new A11YSlider(slider1);
+        var a11ySlider = new A11YSlider(slider1, {
+            infinite: true
+        });
 
         var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
             adaptiveHeight: true,
             autoplay: true,
-            autoplaySpeed: 2000
+            autoplaySpeed: 2000,
+            infinite: false
         });
 
         var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'), {
-            slidesToShow: 4
+            slidesToShow: 1,
+            arrows: false,
+            dots: false,
+            disable: true,
+            responsive: {
+                480: {
+                    disable: false,
+                    slidesToShow: 2,
+                    dots: true
+                },
+                768: {
+                    arrows: true
+                },
+                960: {
+                    slidesToShow: 4
+                }
+            }
         });
 
         var a11ySlider4 = new A11YSlider(document.querySelector('#s-4'), {

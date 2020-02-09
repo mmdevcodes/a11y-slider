@@ -18,6 +18,7 @@ import {
 
 const name = 'A11YSlider';
 const isProduction = !process.env.ROLLUP_WATCH;
+const isWebDev = process.env.WEB;
 const sourcemap = !isProduction ? 'inline' : false;
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 const preamble = `/* a11y-slider - v${version}
@@ -39,7 +40,7 @@ export default (async () => ({
     },
     {
       name,
-      file: browser,
+      file: isWebDev ? 'web/static/a11y-slider.js' : browser,
       format: 'umd',
       sourcemap
     }
