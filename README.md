@@ -1,16 +1,16 @@
 # A11Y Slider
 
-Library for accessible sliders. This is a very early version and the API can possibly change at any time.
+Library for simple and accessible sliders. This is a very early version and the API can possibly change at any time.
 
 ## Install
 
-Install via npm:
+Using npm:
 
 ```bash
 npm install a11y-slider
 ```
 
-Install via browser:
+Using browser:
 
 ```html
 <!-- In the <head> -->
@@ -20,22 +20,41 @@ Install via browser:
 <script src="//unpkg.com/a11y-slider@latest/dist/a11y-slider.js"></script>
 ```
 
-The CSS is small enough to copy directly into your project's main stylesheet if you desire.
-
 ## Usage
 
+A11YSlider works by using [CSS scroll snapping](https://css-tricks.com/practical-css-scroll-snapping/). You can generate a slider by creating an overflowed container and then setting widths all via CSS. Media queries in your CSS will also update the slider.
+
+```html
+<style>
+  .slider {
+    display: flex;
+  }
+
+  .slider > * {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+</style>
+
+<ul class="slider">
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+  <li>4</li>
+</ul>
+
+<script>
+  const slider = new A11YSlider(document.querySelector('.slider'), {
+    adaptiveHeight: true,
+    dots: false
+  });
+</script>
+```
 `A11YSlider(element, options)`
 
-```js
-import A11YSlider from 'a11y-slider';
+The `element` is the targeted slider element. The `options` is an optional parameter. See [options](#options) for more info.
 
-// options parameter is optional
-const slider = new A11YSlider(document.querySelector('.slider'), options);
-```
-
-The `element` is the targeted slider.
-
-The `options` is an optional parameter. Takes an object. See [options](#options) for more info.
+**Note:** A11YSlider only runs if needed! If A11YSlider detects that all slides are already visible in the container then it will not run.
 
 ## Options
 
@@ -59,26 +78,26 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 
 ### Responsive Option Example
 
-You can have different options by specifying a viewport width. This behaves like CSS min-width media queries. Your initial options outside of the `responsive` object will work from your lowest specified viewport and down.
+You can have different options per specified viewport width. This behaves like CSS min-width media queries. Your initial options outside of the `responsive` object will work from your lowest specified viewport and down.
 
 ```js
 const slider = new A11YSlider(document.querySelector('.slider'), {
   slidesToShow: 1,
-  arrows: false,
+  arrows: true, // arrows enabled 767px and down
   dots: false,
-  disable: true, // disables on 479px and down
   responsive: {
-      480: {
-        slidesToShow: 2,
-        dots: true,
-        disable: false, // enables on 480px and up
-      },
-      768: {
-          arrows: true
-      },
-      960: {
-          slidesToShow: 4
-      }
+    768: {
+      slidesToShow: 2,
+      arrows: false
+    },
+    960: {
+      disable: true // slider disabled 960px to 1279px
+    },
+    1280: {
+      disable: false,
+      slidesToShow: 4,
+      dots: true // dots enabled 1280px and up
+    }
   }
 });
 ```
@@ -86,7 +105,7 @@ const slider = new A11YSlider(document.querySelector('.slider'), {
 ## Methods
 
 ```js
-// Example use of the 'scrollToSlide' method
+// Example use of the 'scrollToSlide' method. Scrolls to the 3rd slide
 slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
 ```
 
@@ -99,14 +118,20 @@ slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
 
 ## Events
 
+Events must be called before initializing the slider!
+
 ```js
 // Example use of the 'afterChange' event
-slider.addEventListener('afterChange', function(e) {
+const sliderEl = document.querySelector('.slider');
+
+sliderEl.addEventListener('afterChange', function(e) {
   console.log(e.detail.currentSlide);
 });
-```
 
-Events must be called before initializing the slider!
+const slider = new A11YSlider(sliderEl, {
+    infinite: true
+});
+```
 
 | Event        | Detail                              | Description                         |
 | ------------ | ----------------------------------- | ----------------------------------- |
@@ -129,3 +154,4 @@ A11YSlider works on all modern browsers including IE11. See notes for some cavea
 - Look into not removing width style from slides
 - Make autoprefix run automatically
 - Better resize throttling
+- Look into enabling useCapture for scroll events to prevent window events
