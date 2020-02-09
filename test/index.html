@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0;
+            padding: 1em;
             margin: 0 auto;
             max-width: 1280px;
         }
@@ -29,8 +29,7 @@
         .slider {
             display: flex;
             list-style: none;
-            /* border: 2px solid rebeccapurple; */
-            margin: 10px 0 20px;
+            margin: 10px -10px 20px;
             padding: 0;
             text-align: center;
             font-weight: bold;
@@ -41,8 +40,8 @@
         .slider>li {
             display: block;
             flex: 0 0 auto;
-            padding: 0;
             height: 200px;
+            padding: 0 10px;
         }
 
         .slider>li>div {
@@ -50,9 +49,9 @@
             align-items: center;
             justify-content: center;
             background: #d7d0e9;
-            width: calc(100% - 5px);
             height: 100%;
-            margin: 0 auto;
+            /* width: calc(100% - 20px);
+            margin: 0 auto; */
         }
 
         .a11y-slider-next {
@@ -105,7 +104,15 @@
         }
 
         #s-2>*:nth-child(odd) {
-            height: 50px;
+            height: 75px;
+        }
+
+        #s-3 {
+            border: 2px solid rebeccapurple;
+        }
+
+        #s-3>* {
+            width: 100%;
         }
 
         #s-4>* {
@@ -118,7 +125,7 @@
             }
 
             #s-2>*:nth-child(odd) {
-                height: 100px;
+                height: 150px;
             }
 
             #s-2>* {
@@ -130,7 +137,7 @@
             }
         }
     </style>
-    <h2>Regular slider (100% CSS)</h2>
+    <h2>(100% CSS)</h2>
     <ul id="s-1" class="slider">
         <li>
             <div>1</div>
@@ -154,7 +161,7 @@
             </div>
         </li>
     </ul>
-    <h2>Regular slider (adaptiveHeight: true | autoplay: true | disable on mobile | infinite: false)</h2>
+    <h2>(adaptiveHeight: true | autoplay: true | disable on mobile | infinite: false)</h2>
     <ul id="s-2" class="slider">
         <li>
             <div>1</div>
@@ -172,7 +179,7 @@
             <div>5</div>
         </li>
     </ul>
-    <h2>Regular slider (Responsive enabled | 4 at 960px)</h2>
+    <h2>(Responsive enabled | 6 at 1280px)</h2>
     <ul id="s-3" class="slider">
         <li>
             <div>1</div>
@@ -189,8 +196,23 @@
         <li>
             <div>5</div>
         </li>
+        <li>
+            <div>6</div>
+        </li>
+        <li>
+            <div>7</div>
+        </li>
+        <li>
+            <div>8</div>
+        </li>
+        <li>
+            <div>9</div>
+        </li>
+        <li>
+            <div>10</div>
+        </li>
     </ul>
-    <h2>Only enable on mobile. Custom prev/next button</h2>
+    <h2>(mobile only | custom prev/next)</h2>
     <button id="prev">Prev</button>
     <button id="next">Next</button>
     <ul id="s-4" class="slider">
@@ -233,21 +255,20 @@
 
         var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'), {
             slidesToShow: 1,
-            arrows: false,
+            arrows: true, // arrows enabled 767px and down
             dots: false,
-            disable: true,
             responsive: {
-                480: {
-                    disable: false,
-                    slidesToShow: 2,
-                    dots: true
-                },
                 768: {
-                    slidesToShow: 3,
-                    arrows: true
+                    slidesToShow: 2,
+                    arrows: false
                 },
                 960: {
-                    slidesToShow: 4
+                    disable: true // slider disabled 960px to 1279px
+                },
+                1280: {
+                    disable: false,
+                    slidesToShow: 4,
+                    dots: true // dots enabled 1280px and up
                 }
             }
         });
