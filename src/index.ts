@@ -800,11 +800,16 @@ export default class A11YSlider {
     }
 
     private _getActiveAndVisible(explicitActive: HTMLElement | null, callback?: ActiveVisibleSlides) {
-        let visibleSlides: HTMLElement[] = [];
+        const visibleSlides: HTMLElement[] = [];
         // better cross browser support by getting subpixels then rounding
         const sliderWidth = Math.round(this.slider.getBoundingClientRect().width);
         // Add a 1 pixel buffer so that subpixels are more consistent cross-browser
         const sliderPosition = this.slider.scrollLeft - 1 < 0 ? 0 : this.slider.scrollLeft - 1;
+        // Backup inline styling if added
+        const initialSliderStyle = this.slider.style.position !== '' ? this.slider.style.position : '';
+
+        // Parent element needs relative positioning for calculation to work
+        this.slider.style.position = 'relative';
 
         // Only detects items in the visible viewport of the parent element
         for (let slide of this.slides) {
@@ -815,6 +820,10 @@ export default class A11YSlider {
             }
         }
 
+        // Add back the original style if one existed
+        this.slider.style.position = initialSliderStyle;
+
+        // Globally set visible slides
         this.visibleSlides = visibleSlides;
 
         if (explicitActive) {

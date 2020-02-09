@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,128 +8,198 @@
     <title>Document</title>
     <link rel="stylesheet" href="a11y-slider.css">
 </head>
+
 <body>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
-        body > * {
-            flex: 1 0 auto;
-            width: 100%;
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0;
+            margin: 0 auto;
+            max-width: 1280px;
         }
 
         .slider {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 10px;
-            width: 100%;
             display: flex;
-            justify-content: space-between;
-            transition: height .3s ease-in-out;
+            list-style: none;
+            /* border: 2px solid rebeccapurple; */
+            margin: 10px 0 20px;
+            padding: 0;
+            width: 50vw;
+            text-align: center;
+            font-weight: bold;
+            font-size: 50px;
+            clear: both;
         }
 
-        .slider > * {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: skyblue;
-            color: #fff;
-            font-size: 50px;
-            flex: 1 0 auto;
-            border-left: 10px solid rebeccapurple;
-            border-right: 10px solid rebeccapurple;
+        .slider>li {
+            display: block;
+            flex: 0 0 auto;
+            padding: 0;
             height: 200px;
-            width: 100%;
+        }
+
+        .slider>li>div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #d7d0e9;
+            width: calc(100% - 5px);
+            height: 100%;
+            margin: 0 auto;
+        }
+
+        .a11y-slider-next {
+            float: right;
         }
 
         .a11y-slider-active {
             text-decoration: underline;
         }
 
-        #s-1 > * {
-            width: 100%;
+        .a11y-slider-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
 
-        #s-2 > * {
-            width: 20%;
+        .a11y-slider-dots>li {
+            display: block;
+            margin: 0 10px;
         }
 
-        #s-2 *:nth-child(odd) {
-            height: 50px;
+        .a11y-slider-dots>li>button {
+            border: 1px solid grey;
+            border-radius: 100%;
+            background: none;
+            text-indent: -9999px;
+            width: 14px;
+            height: 14px;
+            padding: 0;
         }
 
-        .active {
-            color: red;
+        .a11y-slider-dots>li>button.active {
+            background: #d7d0e9;
         }
 
         .a11y-slider-autoplay[data-autoplaying="true"]::after {
             content: ' (Autoplaying)';
         }
 
+        /* Specific Styling */
+        #s-1>* {
+            width: 100%;
+        }
+
+        #s-2>* {
+            width: 20%;
+        }
+
+        #s-2>*:nth-child(odd) {
+            height: 50px;
+        }
+
         @media (min-width: 768px) {
-            #s-1 > * {
-                width: 33.3333%;
+            #s-1>* {
+                width: 25%;
             }
 
-            #s-4 > * {
-                width: 33.333% !important;
-            }
-
-            #s-2 *:nth-child(odd) {
+            #s-2>*:nth-child(odd) {
                 height: 100px;
             }
 
-            #s-2 > * {
+            #s-2>* {
                 width: 100%;
+            }
+
+            #s-4>* {
+                width: 33.333% !important;
             }
         }
     </style>
-    <h1>A11Y Slider</h1>
     <h2>Regular slider (100% CSS)</h2>
     <ul id="s-1" class="slider">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li><a href="#">5</a></li>
         <li>
-            <button>6</button>
-            <div tabindex="0">(last)</div>
+            <div>1</div>
+        </li>
+        <li>
+            <div>2</div>
+        </li>
+        <li>
+            <div>3</div>
+        </li>
+        <li>
+            <div>4</div>
+        </li>
+        <li>
+            <div><a href="#">5</a></div>
+        </li>
+        <li>
+            <div>
+                <button>6</button>
+                <div tabindex="0">(last)</div>
+            </div>
         </li>
     </ul>
-    <h2>Regular slider (adaptiveHeight: true | autoplay: true | disable on mobile)</h2>
+    <h2>Regular slider (adaptiveHeight: true | autoplay: true | disable on mobile | infinite: false)</h2>
     <ul id="s-2" class="slider">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
+        <li>
+            <div>1</div>
+        </li>
+        <li>
+            <div>2</div>
+        </li>
+        <li>
+            <div>3</div>
+        </li>
+        <li>
+            <div>4</div>
+        </li>
+        <li>
+            <div>5</div>
+        </li>
     </ul>
     <h2>Regular slider (Responsive enabled | 4 at 960px)</h2>
     <ul id="s-3" class="slider">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
-        <li>4</li>
-        <li>5</li>
+        <li>
+            <div>1</div>
+        </li>
+        <li>
+            <div>2</div>
+        </li>
+        <li>
+            <div>3</div>
+        </li>
+        <li>
+            <div>4</div>
+        </li>
+        <li>
+            <div>5</div>
+        </li>
     </ul>
     <h2>Only enable on mobile. Custom prev/next button</h2>
     <button id="prev">Prev</button>
     <button id="next">Next</button>
     <ul id="s-4" class="slider">
-        <li>1</li>
-        <li>2</li>
-        <li>3</li>
+        <li>
+            <div>1</div>
+        </li>
+        <li>
+            <div>2</div>
+        </li>
+        <li>
+            <div>3</div>
+        </li>
     </ul>
     <script src="a11y-slider.js"></script>
     <script>
@@ -183,4 +254,5 @@
         });
     </script>
 </body>
+
 </html>
