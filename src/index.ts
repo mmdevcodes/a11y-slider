@@ -808,10 +808,12 @@ export default class A11YSlider {
         // Add a 1 pixel buffer so that subpixels are more consistent cross-browser
         const sliderPosition = this.slider.scrollLeft - 1 < 0 ? 0 : this.slider.scrollLeft - 1;
         // Backup inline styling if added
-        const initialSliderStyle = this.slider.style.position !== '' ? this.slider.style.position : '';
+        const positionStyle = this.slider.style.position !== '' ? this.slider.style.position : '';
+        const borderStyle = this.slider.style.borderWidth !== '' ? this.slider.style.borderWidth : '';
 
-        // Parent element needs relative positioning for calculation to work
+        // Parent element needs relative positioning for calculations to work
         this.slider.style.position = 'relative';
+        this.slider.style.borderWidth = '0px';
 
         // Only detects items in the visible viewport of the parent element
         for (let slide of this.slides) {
@@ -822,8 +824,9 @@ export default class A11YSlider {
             }
         }
 
-        // Add back the original style if one existed
-        this.slider.style.position = initialSliderStyle;
+        // Add back the original styles
+        this.slider.style.position = positionStyle;
+        this.slider.style.borderWidth = borderStyle;
 
         // Globally set visible slides
         this.visibleSlides = visibleSlides;
