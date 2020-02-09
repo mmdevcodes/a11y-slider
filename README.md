@@ -59,7 +59,7 @@ The `options` is an optional parameter. Takes an object. See [options](#options)
 
 ### Responsive Option Example
 
-You can have different options by specifying a viewport width. This always work with the mobile-first (think min-width). Your initial options outside of the `responsive` object will work from your lowest specified viewport and down.
+You can have different options by specifying a viewport width. This behaves like CSS min-width media queries. Your initial options outside of the `responsive` object will work from your lowest specified viewport and down.
 
 ```js
 const slider = new A11YSlider(document.querySelector('.slider'), {
