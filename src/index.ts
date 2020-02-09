@@ -407,7 +407,7 @@ export default class A11YSlider {
             }
 
             // Create a layer cake of options from the lowest breakpoint to the highest
-            breakpoints.forEach((breakpoint, i) => {
+            breakpoints.forEach((breakpoint) => {
                 Object.assign(options, breakpoint.options);
             });
 
