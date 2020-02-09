@@ -11,7 +11,7 @@
     "name": "mmahandev"
   },
   "dependencies": {
-    "a11y-slider": "^0.3.1",
+    "a11y-slider": "^0.3.2",
     "cross-fetch": "^3.0.4",
     "gatsby": "^2.18.18",
     "gatsby-plugin-manifest": "^2.1.1",
