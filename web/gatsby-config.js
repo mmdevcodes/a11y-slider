@@ -3,6 +3,7 @@ module.exports = {
     title: 'A11Y Slider - Library for simple and accessible sliders',
   },
   plugins: [
+    'gatsby-plugin-styled-components',
     'gatsby-plugin-react-helmet',
     {
       resolve: `gatsby-plugin-manifest`,
@@ -17,6 +18,6 @@ module.exports = {
       },
     },
     'gatsby-plugin-sass',
-    'gatsby-plugin-offline',
+    'gatsby-plugin-offline'
   ],
 };

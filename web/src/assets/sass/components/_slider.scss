@@ -1,14 +1,13 @@
 $slide-gutter: 0.2em;
 
 .a11y-slider-container {
-    margin: 0 0 4em;
+    margin: 0 0 2em;
 }
 
 .slider {
     @extend .a11y-slider;
-    display: flex;
     list-style: none;
-    margin: 1em 0;
+    margin: 1em -#{$slide-gutter};
     padding: 0;
 
     li {
@@ -17,8 +16,6 @@ $slide-gutter: 0.2em;
         margin: 0;
         font-weight: bold;
         font-size: 3em;
-        flex: 1 0 auto;
-        width: 100%;
 
         div {
             background: _palette(fg);
@@ -46,8 +43,8 @@ $slide-gutter: 0.2em;
 
     li {
         display: block;
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
         padding: 0;
         margin: 0 6px;
         color: #fff;

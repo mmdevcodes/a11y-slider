@@ -12,13 +12,16 @@
   },
   "dependencies": {
     "a11y-slider": "^0.3.2",
+    "babel-plugin-styled-components": "^1.10.7",
     "cross-fetch": "^3.0.4",
     "gatsby": "^2.18.18",
     "gatsby-plugin-manifest": "^2.1.1",
     "gatsby-plugin-offline": "^2.1.0",
     "gatsby-plugin-react-helmet": "^3.0.12",
     "gatsby-plugin-sass": "^2.0.11",
+    "gatsby-plugin-styled-components": "^3.1.19",
     "node-sass": "^4.13.1",
+    "prettier": "^1.19.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-github-corner": "^2.3.0",
@@ -26,7 +29,8 @@
     "react-markdown": "^4.3.1",
     "react-scrollspy": "^3.4.0",
     "react-syntax-highlighter": "^12.2.1",
-    "smoothscroll-polyfill": "^0.4.4"
+    "smoothscroll-polyfill": "^0.4.4",
+    "styled-components": "^5.0.1"
   },
   "scripts": {
     "develop": "gatsby develop",
@@ -41,7 +45,6 @@
   },
   "devDependencies": {
     "gh-pages": "^2.2.0",
-    "prettier": "^1.17.0",
     "rimraf": "^2.6.3"
   },
   "keywords": [
