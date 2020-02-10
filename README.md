@@ -118,8 +118,6 @@ slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
 
 ## Events
 
-Events must be called before initializing the slider!
-
 ```js
 // Example use of the 'afterChange' event
 const sliderEl = document.querySelector('.slider');
@@ -139,6 +137,8 @@ const slider = new A11YSlider(sliderEl, {
 | beforeChange | currentSlide, nextSlide, a11yslider | Fires before slide change           |
 | afterChange  | currentSlide, a11yslider            | Fires after slide change            |
 | destroy      | a11yslider                          | Fires after the slider is destroyed |
+
+Events listeners should be added before initializing the slider if possible. For example `init` will require it.
 
 ## Browser support
 

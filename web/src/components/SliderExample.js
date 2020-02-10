@@ -66,7 +66,7 @@ export default class Example extends React.Component {
         const Slide = styled.li`${this.slideItemStyles}`;
 
         return (
-            <div className="example">
+            <div className="example" style={this.props.style}>
                 {this.props.title && <h2 className="example-title">{this.props.title}</h2>}
 
                 <Slider className="slider" ref={el => this.example = el}>
@@ -74,17 +74,20 @@ export default class Example extends React.Component {
                 </Slider>
 
                 <div className="example-code">
-                    <CodeBlock
-                        language="js"
-                        value={prettier.format(this.jsCodePreview, {
-                            parser: 'babel',
-                            plugins: [parserBabylon],
-                            printWidth: 60
-                        })}
-                    />
-
-                    {this.props.slidercss && this.props.slidecss &&
+                    {this.props.hidejs !== true &&
                         <CodeBlock
+                            language="js"
+                            value={prettier.format(this.jsCodePreview, {
+                                parser: 'babel',
+                                plugins: [parserBabylon],
+                                printWidth: this.props.hidecss ? 200 : 60
+                            })}
+                        />
+                    }
+
+                    {this.props.slidercss && this.props.slidecss && this.props.hidecss !== true &&
+                        <CodeBlock
+                            style={{display: this.props.hidecss === true ? 'none' : 'block'}}
                             language="css"
                             value={prettier.format(this.cssCodePreview, {
                                 parser: 'css',
