@@ -449,6 +449,7 @@ export default class A11YSlider {
             // Set styles for items
             for (let slide of this.slides) {
                 slide.style.width = `${slideWidth}%`;
+                slide.style.flex = '0 0 auto';
             }
         } else {
             // Reset everything if number of items not explicitly set
@@ -462,6 +463,7 @@ export default class A11YSlider {
 
         for (let slide of this.slides) {
             slide.style.removeProperty('width');
+            slide.style.removeProperty('flex');
         }
     }
 
