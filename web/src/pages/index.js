@@ -1,6 +1,5 @@
 import React from 'react';
 import GithubCorner from 'react-github-corner';
-import FocusOverlay from 'focus-overlay';
 import Layout from '../components/layout';
 import Sidebar from '../components/Sidebar';
 import About from '../components/About';
@@ -9,11 +8,17 @@ import Download from '../components/Download';
 
 export default class Index extends React.Component {
   componentDidMount() {
-    this.focusOverlay = new FocusOverlay(null, { zIndex: 10001 });
+    if (typeof window !== `undefined`) {
+      const FocusOverlay = require("focus-overlay").default;
+
+      this.focusOverlay = new FocusOverlay(null, { zIndex: 10001 });
+    }
   }
 
   componentWillUnmount() {
-    this.focusOverlay.destroy();
+    if (typeof window !== `undefined`) {
+      this.focusOverlay.destroy();
+    }
   }
 
   render() {
