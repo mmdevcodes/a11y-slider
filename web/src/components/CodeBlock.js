@@ -37,6 +37,7 @@ export default class CodeBlock extends React.PureComponent {
           background: 'rgba(0,5,0,.65)',
           margin: null
         }}
+        data-language={this.props.language}
       >
         {value}
       </SyntaxHighlighter>

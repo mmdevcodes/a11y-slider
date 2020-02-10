@@ -176,6 +176,22 @@
 			padding: 1em 1.5em;
 			overflow-x: auto;
 		}
+
+		@include breakpoint('>=medium') {
+			&[data-language] {
+				position: relative;
+
+				&::after {
+					content: attr(data-language);
+					display: inline-block;
+					position: absolute;
+					top: 5px;
+					right: 15px;
+					color: _palette(fg);
+					font-size: 0.9em;
+				}
+			}
+		}
 	}
 
 	hr {
