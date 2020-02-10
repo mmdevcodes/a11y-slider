@@ -1,6 +1,6 @@
 # A11Y Slider
 
-Library for simple and accessible sliders. This is a very early version and the API can possibly change at any time.
+Library for simple and accessible sliders. [Demo and examples](https://a11yslider.js.org/#examples)
 
 ## Install
 

@@ -95,7 +95,8 @@
 			@include vendor('pointer-events', 'none');
 		}
 
-		&:hover {
+		&:hover,
+		&:focus {
 			border-color: _palette(fg) !important;
 
 			&:after {

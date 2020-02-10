@@ -23,7 +23,7 @@ export default props => {
           // Leave out the introduction text
           if (
             node.children?.[0]?.value?.includes(
-              'Library for accessible sliders'
+              'Library for simple and accessible sliders'
             )
           ) {
             return false;

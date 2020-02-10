@@ -14,6 +14,7 @@
     "a11y-slider": "^0.3.3",
     "babel-plugin-styled-components": "^1.10.7",
     "cross-fetch": "^3.0.4",
+    "focus-overlay": "^1.0.5",
     "gatsby": "^2.18.18",
     "gatsby-plugin-manifest": "^2.1.1",
     "gatsby-plugin-offline": "^2.1.0",

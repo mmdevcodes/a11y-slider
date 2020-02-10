@@ -76,6 +76,11 @@
           a {
             color: _palette(fg-bold);
 
+            &:hover,
+            &:focus {
+              color: #d0beff;
+            }
+
             &:after {
               max-width: 100%;
             }
@@ -126,12 +131,14 @@
         max-width: 0;
       }
 
-      &:hover {
-        color: _palette(fg);
+      &:hover,
+      &:focus {
+        color: _palette(fg-bold);
       }
 
       &.active {
         color: _palette(fg-bold);
+
 
         &:after {
           max-width: 100%;

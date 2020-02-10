@@ -21,7 +21,8 @@
 			a {
 				border-bottom-color: _palette(fg);
 
-				&:hover {
+				&:hover,
+				&:focus {
 					border-bottom-color: transparent;
 				}
 			}

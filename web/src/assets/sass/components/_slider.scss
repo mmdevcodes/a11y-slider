@@ -7,15 +7,15 @@ $slide-gutter: 0.2em;
 .slider {
     @extend .a11y-slider;
     list-style: none;
-    margin: 1em -#{$slide-gutter};
+    margin: 0.5em -#{$slide-gutter};
     padding: 0;
+    font-size: 3em;
 
     li {
         display: block;
         padding: 0 $slide-gutter;
         margin: 0;
         font-weight: bold;
-        font-size: 3em;
 
         div {
             background: _palette(fg);
