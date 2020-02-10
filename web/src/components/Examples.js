@@ -154,14 +154,7 @@ export default class Examples extends React.Component {
                  />
                 <SliderExample
                     amount={10}
-                    slidercss={`
-                        display: flex;
-                    `}
-                    slidecss={`
-                        width: 25%;
-                        flex: 0 0 auto;
-                    `}
-                    options={{ dots: false, arrows: false }}
+                    options={{ dots: false, arrows: false, slidesToShow: 4 }}
                     hidecss={true}
                     ref={el => this.syncedSlide2 = el}
                     codePreview={`
