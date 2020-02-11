@@ -1,5 +1,9 @@
 .example {
     margin-bottom: 65px;
+
+    pre {
+        margin-bottom: 1em;
+    }
 }
 
 .example-title {
@@ -15,21 +19,6 @@
 
         > code {
             height: 100%;
-        }
-    }
-}
-
-@include breakpoint('>=medium') {
-    .example-code {
-        flex-wrap: nowrap;
-
-        > pre {
-            flex: 0 1 auto;
-            margin-right: 20px !important;
-
-            &:last-child {
-                margin-right: 0 !important;
-            }
         }
     }
 }

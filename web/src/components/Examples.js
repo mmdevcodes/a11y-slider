@@ -46,7 +46,7 @@ export default class Examples extends React.Component {
                     `}
                  />
                 <SliderExample
-                    title="Sizing with JS"
+                    title="Items with JS"
                     amount={10}
                     options={{ slidesToShow: 2 }}
                  />
@@ -104,7 +104,7 @@ export default class Examples extends React.Component {
                         }
                     }}
                     codePreview={`
-                        new A11YSlider(document.querySelector('.slider'), {
+                        const slider = new A11YSlider(document.querySelector('.slider'), {
                             slidesToShow: 1,
                             arrows: true, // arrows enabled 767px and down
                             dots: false,

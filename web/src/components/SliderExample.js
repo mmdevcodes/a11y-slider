@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from "@emotion/styled";
 import A11YSlider from 'a11y-slider';
 import CodeBlock from './CodeBlock';
 import prettier from 'prettier/standalone';
@@ -11,7 +11,7 @@ export default class Example extends React.Component {
     constructor(props) {
         super(props);
 
-        this.options = this.props.options ?? {};
+        this.options = Object.assign({ container: false }, this.props.options ?? { });
         this.sliderStyles = this.props.slidercss;
         this.slideItemStyles = this.props.slidecss;
 
@@ -47,7 +47,7 @@ export default class Example extends React.Component {
 
         // JS String to be used by code preview
         this.jsCodePreview = this.props.codePreview ?? `
-            new A11YSlider(document.querySelector('.slider')
+            const slider = new A11YSlider(document.querySelector('.slider')
                 ${this.props.options ? `, ${JSON.stringify(this.props.options, false)}` : ''}
             );
         `;
@@ -79,8 +79,7 @@ export default class Example extends React.Component {
                             language="js"
                             value={prettier.format(this.jsCodePreview, {
                                 parser: 'babel',
-                                plugins: [parserBabylon],
-                                printWidth: this.props.hidecss ? 200 : 60
+                                plugins: [parserBabylon]
                             })}
                         />
                     }
