@@ -69,7 +69,7 @@ export default class A11YSlider {
     /**
      * Moves slider to target element
      */
-    scrollToSlide(targetSlide: HTMLElement): void;
+    scrollToSlide(target: HTMLElement | number): void;
     /**
      * Update the options on the slider instance
      */
