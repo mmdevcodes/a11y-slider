@@ -14,7 +14,7 @@ export default class Examples extends React.Component {
             // Get index to use
             const nextSlideIndex = Array.from(nextSlide.parentNode.children).indexOf(nextSlide);
             // Tell slider to move to slide element based off index
-            this.syncedSlide2.slider.scrollToSlide(this.syncedSlide2.example.children[nextSlideIndex]);
+            this.syncedSlide2.slider.scrollToSlide(nextSlideIndex);
         });
     }
 
@@ -169,7 +169,7 @@ export default class Examples extends React.Component {
                             // Get index of the next element
                             const nextSlideIndex = Array.from(nextSlide.parentNode.children).indexOf(nextSlide);
                             // Tell 2nd slider to move to slide element based off index
-                            slider2.scrollToSlide(sliderEl2.children[nextSlideIndex]);
+                            slider2.scrollToSlide(nextSlideIndex);
                         });
                     `}
                  />

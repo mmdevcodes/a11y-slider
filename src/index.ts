@@ -731,9 +731,18 @@ export default class A11YSlider {
     /**
      * Moves slider to target element
      */
-    public scrollToSlide(targetSlide: HTMLElement) {
+    public scrollToSlide(target: HTMLElement | number) {
         const modernBrowser: boolean = !!HTMLElement.prototype.scrollTo;
         const originalPosition = this.slider.scrollLeft;
+        let targetSlide: HTMLElement;
+
+        if (isInteger(target)) {
+            targetSlide = this.slides[target as number];
+        } else if (target instanceof HTMLElement) {
+            targetSlide = target;
+        } else {
+            throw new Error('scrollToSlide only accepts an HTMLElement or number')
+        }
 
         // Dispatch custom event
         this._dispatchEvent('beforeChange', {

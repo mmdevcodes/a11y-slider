@@ -105,13 +105,14 @@ const slider = new A11YSlider(document.querySelector('.slider'), {
 ## Methods
 
 ```js
-// Example use of the 'scrollToSlide' method. Scrolls to the 3rd slide
-slider.scrollToSlide(document.querySelector('.slider > *:nth-child(3)'));
+// Example use of the 'scrollToSlide' method.
+// Scrolls to the 3rd slide (0-based index)
+slider.scrollToSlide(document.querySelector(2));
 ```
 
 | Method        | Arguments                           | Description                                               |
 | ------------- | ----------------------------------- | --------------------------------------------------------- |
-| scrollToSlide | Element                             | Scrolls slider to specified element                       |
+| scrollToSlide | Number \| Element                   | Scrolls slider to specified slide index (0-based) or slide element |
 | updateOptions | Object                              | Enter new set of options (reloads slider)                 |
 | refreshHeight |                                   | Sets height of slider to height of the current active slide |
 | destroy       |                                     | Removes everything that the A11YSlider created in the DOM |

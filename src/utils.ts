@@ -42,7 +42,9 @@ export const crossCustomEvent = (event: string, params: any) => {
 export const isInteger = (value: any): boolean => {
   return typeof value === 'number' &&
     isFinite(value) &&
-    Math.floor(value) === value;
+    Math.floor(value) === value &&
+    ((value != null) &&
+    !isNaN(Number(value.toString())));
 };
 
 export const isObject = (value: any): boolean => {
