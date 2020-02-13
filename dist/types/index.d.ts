@@ -35,7 +35,6 @@ export default class A11YSlider {
     private _autoplayBtn;
     private _pauseOnMouseLeave;
     private _skipBtns;
-    private _isScrolling;
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
