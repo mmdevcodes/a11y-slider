@@ -582,7 +582,7 @@ export default class A11YSlider {
 
             // Event handlers to switch to slide
             const switchToSlide = (event: Event) => {
-                if (a11yClick(event) === true && this._isScrolling === false) {
+                if (a11yClick(event) === true) {
                     // Go to slide
                     this.scrollToSlide(this.slides[i]);
 
@@ -854,7 +854,7 @@ export default class A11YSlider {
     }
 
     private _handlePrev(event: Event) {
-        if (a11yClick(event) === true && this._isScrolling === false) {
+        if (a11yClick(event) === true) {
             // Go to previous slide
             this._goPrevOrNext(SlideDirection.Prev);
 
@@ -864,7 +864,7 @@ export default class A11YSlider {
     }
 
     private _handleNext(event: Event) {
-        if (a11yClick(event) === true && this._isScrolling === false) {
+        if (a11yClick(event) === true) {
             // Go to next slide
             this._goPrevOrNext(SlideDirection.Next);
 
