@@ -107,7 +107,7 @@ const slider = new A11YSlider(document.querySelector('.slider'), {
 ```js
 // Example use of the 'scrollToSlide' method.
 // Scrolls to the 3rd slide (0-based index)
-slider.scrollToSlide(document.querySelector(2));
+slider.scrollToSlide(2);
 ```
 
 | Method        | Arguments                           | Description                                               |

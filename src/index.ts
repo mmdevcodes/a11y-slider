@@ -808,18 +808,23 @@ export default class A11YSlider {
     }
 
     private _getActiveAndVisible(explicitActive: HTMLElement | null, callback?: ActiveVisibleSlides) {
+        /**
+         * Parent element needs the correct styling for
+         * calculations so backing up the initial styles
+         */
+        const noSliderClass = !this.slider.classList.contains(this._sliderClass);
+        const borderStyle = this.slider.style.borderWidth !== '' ? this.slider.style.borderWidth : '';
+
+        // Applying correct styles for calculations
+        this.slider.style.borderWidth = '0px';
+        if (noSliderClass) this.slider.classList.add(this._sliderClass);
+
+        // Can start storing variables now for calculations
         const visibleSlides: HTMLElement[] = [];
         // better cross browser support by getting subpixels then rounding
         const sliderWidth = Math.round(this.slider.getBoundingClientRect().width);
         // Add a 1 pixel buffer so that subpixels are more consistent cross-browser
         const sliderPosition = this.slider.scrollLeft - 1 < 0 ? 0 : this.slider.scrollLeft - 1;
-        // Backup inline styling if added
-        const positionStyle = this.slider.style.position !== '' ? this.slider.style.position : '';
-        const borderStyle = this.slider.style.borderWidth !== '' ? this.slider.style.borderWidth : '';
-
-        // Parent element needs relative positioning for calculations to work
-        this.slider.style.position = 'relative';
-        this.slider.style.borderWidth = '0px';
 
         // Only detects items in the visible viewport of the parent element
         for (let slide of this.slides) {
@@ -831,8 +836,8 @@ export default class A11YSlider {
         }
 
         // Add back the original styles
-        this.slider.style.position = positionStyle;
         this.slider.style.borderWidth = borderStyle;
+        if (noSliderClass) this.slider.classList.remove(this._sliderClass);
 
         // Globally set visible slides
         this.visibleSlides = visibleSlides;
