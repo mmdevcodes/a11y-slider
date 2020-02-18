@@ -77,6 +77,16 @@ export default class A11YSlider {
     public sliderEnabled: SliderState;
 
     constructor(element: HTMLElement, options?: Options) {
+        // Enforce `element` parameter
+        if (!(element instanceof HTMLElement)) {
+            throw new Error('The required input [element] must be an HTML Element');
+        }
+
+        // Make sure options parameter is correct
+        if (options !== undefined && !isObject(options)) {
+            throw new Error('The required input [options] must be an Object');
+        }
+
         this.slider = element;
         this.slides = element.children as HTMLCollectionOf<HTMLElement>;
         this.sliderContainer = createElement('<div class="a11y-slider-container"></div>');
@@ -133,6 +143,9 @@ export default class A11YSlider {
 
     // Initialize the slider, should mirror destroy()
     private _init() {
+        // Firefox moves the slider depending on page load so resetting to 0
+        setTimeout(() => this.slider.scrollLeft = 0, 1);
+
         // Generate listeners for responsive options if added
         if (isObject(this.options.responsive)) this._checkResponsive();
 
@@ -189,9 +202,6 @@ export default class A11YSlider {
     private _enableSlider() {
         // Set slider to enabled
         this.sliderEnabled = SliderState.Enabled;
-
-        // Firefox moves the slider depending on page load so resetting to 0
-        setTimeout(() => this.slider.scrollLeft = 0, 1);
 
         // Add slider container to DOM and move slider into it if enabled
         if (this.options.container) {
@@ -811,7 +821,7 @@ export default class A11YSlider {
          * calculations so backing up the initial styles
          */
         const noSliderClass = !this.slider.classList.contains(this._sliderClass);
-        const borderStyle = this.slider.style.borderWidth !== '' ? this.slider.style.borderWidth : '';
+        const borderStyle = this.slider.style.borderWidth;
 
         // Applying correct styles for calculations
         this.slider.style.borderWidth = '0px';
@@ -845,7 +855,7 @@ export default class A11YSlider {
         } else if (this.options.centerMode === true) {
             this.activeSlide = this.visibleSlides[Math.floor((this.visibleSlides.length - 1) / 2)];
         } else {
-            this.activeSlide = visibleSlides[0];
+            this.activeSlide = visibleSlides[0] ?? this.slides[0];
         }
 
         callback && callback(this.visibleSlides, this.activeSlide);
