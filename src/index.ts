@@ -10,31 +10,31 @@ import {
 } from './utils';
 import './index.css';
 
-enum SlideDirection {
+export enum SlideDirection {
     Prev,
     Next
 }
 
-enum SliderState {
+export enum SliderState {
     Enabled = 1,
     Disabled = 0
 }
 
-enum AutoplaySwitch {
+export enum AutoplaySwitch {
     Enable,
     Disable
 }
 
-enum IsAutoplaying {
+export enum IsAutoplaying {
     Yes,
     No = 0
 }
 
-interface ActiveVisibleSlides {
+export interface ActiveVisibleSlides {
     (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
 }
 
-interface Options {
+export interface Options {
     container: boolean,
     arrows: boolean,
     prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
