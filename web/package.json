@@ -13,7 +13,7 @@
   "dependencies": {
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.27",
-    "a11y-slider": "^0.3.7",
+    "a11y-slider": "^0.3.8",
     "cross-fetch": "^3.0.4",
     "focus-overlay": "^1.0.5",
     "gatsby": "^2.18.18",
