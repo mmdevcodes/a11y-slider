@@ -1,9 +1,24 @@
 import './index.css';
-declare enum SliderState {
+export declare enum SlideDirection {
+    Prev = 0,
+    Next = 1
+}
+export declare enum SliderState {
     Enabled = 1,
     Disabled = 0
 }
-interface Options {
+export declare enum AutoplaySwitch {
+    Enable = 0,
+    Disable = 1
+}
+export declare enum IsAutoplaying {
+    Yes = 0,
+    No = 0
+}
+export interface ActiveVisibleSlides {
+    (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
+}
+export interface Options {
     container: boolean;
     arrows: boolean;
     prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
@@ -92,4 +107,3 @@ export default class A11YSlider {
      */
     destroy(): void;
 }
-export {};
