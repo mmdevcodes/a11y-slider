@@ -1,40 +1,25 @@
 import './index.css';
-export declare enum SlideDirection {
-    Prev = 0,
-    Next = 1
-}
-export declare enum SliderState {
+declare enum SliderState {
     Enabled = 1,
     Disabled = 0
 }
-export declare enum AutoplaySwitch {
-    Enable = 0,
-    Disable = 1
-}
-export declare enum IsAutoplaying {
-    Yes = 0,
-    No = 0
-}
-export interface ActiveVisibleSlides {
-    (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
-}
-export interface Options {
-    container: boolean;
-    arrows: boolean;
-    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
-    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
-    dots: boolean;
-    adaptiveHeight: boolean;
-    skipBtn: boolean;
-    slidesToShow: number | null;
-    autoplay: boolean;
-    autoplaySpeed: number;
-    autoplayHoverPause: boolean;
-    centerMode: boolean;
-    infinite: boolean;
-    disable: boolean;
-    responsive: object | null;
-}
+declare type Options = {
+    container?: boolean;
+    arrows?: boolean;
+    prevArrow?: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
+    nextArrow?: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList;
+    dots?: boolean;
+    adaptiveHeight?: boolean;
+    skipBtn?: boolean;
+    slidesToShow?: number | null;
+    autoplay?: boolean;
+    autoplaySpeed?: number;
+    autoplayHoverPause?: boolean;
+    centerMode?: boolean;
+    infinite?: boolean;
+    disable?: boolean;
+    responsive?: object | null;
+};
 export default class A11YSlider {
     private _activeClass;
     private _visibleClass;
@@ -107,3 +92,4 @@ export default class A11YSlider {
      */
     destroy(): void;
 }
+export {};
