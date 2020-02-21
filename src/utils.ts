@@ -52,7 +52,11 @@ export const isObject = (value: any): boolean => {
 };
 
 // Run a function on all elements even if it's a collection or single
-export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement>| HTMLCollection | NodeList | HTMLElement[], callback?: (element: HTMLElement) => void) => {
+export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement>| HTMLCollection | NodeList | HTMLElement[] | undefined, callback?: (element: HTMLElement) => void) => {
+    // Return if nothing passed
+    if (elements === undefined) return;
+
+    // Wrap elements in an array if single
     const els = elements instanceof HTMLElement ? [elements] : elements;
 
     for (let el of els) {

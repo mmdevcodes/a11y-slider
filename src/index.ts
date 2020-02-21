@@ -10,46 +10,46 @@ import {
 } from './utils';
 import './index.css';
 
-export enum SlideDirection {
+enum SlideDirection {
     Prev,
     Next
 }
 
-export enum SliderState {
+enum SliderState {
     Enabled = 1,
     Disabled = 0
 }
 
-export enum AutoplaySwitch {
+enum AutoplaySwitch {
     Enable,
     Disable
 }
 
-export enum IsAutoplaying {
+enum IsAutoplaying {
     Yes,
     No = 0
 }
 
-export interface ActiveVisibleSlides {
+interface ActiveVisibleSlides {
     (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
 }
 
-export interface Options {
-    container: boolean,
-    arrows: boolean,
-    prevArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    nextArrow: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
-    dots: boolean,
-    adaptiveHeight: boolean,
-    skipBtn: boolean,
-    slidesToShow: number | null,
-    autoplay: boolean,
-    autoplaySpeed: number,
-    autoplayHoverPause: boolean,
-    centerMode: boolean,
-    infinite: boolean,
-    disable: boolean,
-    responsive: object | null
+type Options = {
+    container?: boolean,
+    arrows?: boolean,
+    prevArrow?: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    nextArrow?: HTMLElement | HTMLCollectionOf<HTMLElement> | NodeList,
+    dots?: boolean,
+    adaptiveHeight?: boolean,
+    skipBtn?: boolean,
+    slidesToShow?: number | null,
+    autoplay?: boolean,
+    autoplaySpeed?: number,
+    autoplayHoverPause?: boolean,
+    centerMode?: boolean,
+    infinite?: boolean,
+    disable?: boolean,
+    responsive?: object | null
 }
 
 export default class A11YSlider {
@@ -123,7 +123,7 @@ export default class A11YSlider {
         };
 
         // Set user-inputted options if available
-        Object.assign(this.options, options);
+        this.options = { ...this.options, ...options };
 
         // Binding
         this._handlePrev = this._handlePrev.bind(this);
