@@ -51,19 +51,44 @@ export const isObject = (value: any): boolean => {
     return typeof value === 'object' && value !== null;
 };
 
+// https://stackoverflow.com/a/24048615
+export const canAccessAsArray = (item: any): boolean => {
+    if (Array.isArray(item)) {
+        return true;
+    }
+    // modern browser such as IE9 / firefox / chrome etc.
+    var result = Object.prototype.toString.call(item);
+    if (result === "[object HTMLCollection]" || result === "[object NodeList]") {
+        return true;
+    }
+    //ie 6/7/8
+    if (typeof item !== "object" || !item.hasOwnProperty("length") || item.length < 0) {
+        return false;
+    }
+    // a false positive on an empty pseudo-array is OK because there won't be anything
+    // to iterate so we allow anything with .length === 0 to pass the test
+    if (item.length === 0) {
+        return true;
+    } else if (item[0] && item[0].nodeType) {
+        return true;
+    }
+    return false;
+}
+
 // Run a function on all elements even if it's a collection or single
 export const everyElement = (elements: HTMLElement | HTMLCollectionOf<HTMLElement>| HTMLCollection | NodeList | HTMLElement[] | undefined, callback?: (element: HTMLElement) => void) => {
     // Return if nothing passed
     if (elements === undefined) return;
 
     // Wrap elements in an array if single
-    const els = elements instanceof HTMLElement ? [elements] : elements;
+    let els = canAccessAsArray(elements) ? elements : [elements];
 
-    for (let el of els) {
+    // Oldschool array iterator method for IE (avoiding polyfills)
+    Array.prototype.slice.call(els).forEach(function (el) {
         if (el instanceof HTMLElement) {
             callback && callback(el);
         }
-    }
+    });
 }
 
 /**

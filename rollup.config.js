@@ -51,31 +51,7 @@ export default (async () => ({
     // Allow bundling cjs modules. Rollup doesn't understand cjs
     commonjs(),
     // Compile TypeScript/JavaScript files
-    babel({
-      babelrc: false,
-      extensions,
-      exclude: ['node_modules/**', '[/\/core-js\//]'],
-      runtimeHelpers: true,
-      presets: [
-        [
-          '@babel/preset-env',
-          {
-            modules: false,
-            targets: {
-              ie: 11
-            },
-            useBuiltIns: 'usage',
-            corejs: 3
-          }
-        ],
-        '@babel/typescript'
-      ],
-      plugins: [
-        '@babel/plugin-transform-typescript',
-        '@babel/plugin-proposal-class-properties',
-        '@babel/plugin-proposal-optional-chaining'
-      ]
-    }),
+    babel({ extensions, include: ['src/**/*'] }),
     // Extract CSS and create separate file
     postcss({
       extract: style,

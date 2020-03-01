@@ -345,18 +345,18 @@ export default class A11YSlider {
         this.slider.classList.add(this._sliderClass);
 
         // Reset the more dynamic CSS first if it exists
-        for (let slide of this.slides) {
+        everyElement(this.slides, slide => {
             slide.classList.remove(this._activeClass);
             slide.classList.remove(this._visibleClass);
-        }
+        });
 
         // Add in active classes
         this.activeSlide.classList.add(this._activeClass);
 
         // Add in visible classes
-        for (let slide of this.visibleSlides) {
+        everyElement(this.visibleSlides, slide => {
             slide.classList.add(this._visibleClass);
-        }
+        });
 
         // Trigger dot update
         this._updateDots(this.activeSlide);
@@ -374,10 +374,10 @@ export default class A11YSlider {
         this.slider.classList.remove(this._sliderClass);
 
         // Reset all the dynamic classes
-        for (let slide of this.slides) {
+        everyElement(this.slides, slide => {
             slide.classList.remove(this._activeClass);
             slide.classList.remove(this._visibleClass);
-        }
+        });
 
         // Remove all a11y functionality
         this._removeA11Y();
@@ -455,10 +455,10 @@ export default class A11YSlider {
             this.slider.style.display = 'flex';
 
             // Set styles for items
-            for (let slide of this.slides) {
+            everyElement(this.slides, slide => {
                 slide.style.width = `${slideWidth}%`;
                 slide.style.flex = '0 0 auto';
-            }
+            });
         } else {
             // Reset everything if number of items not explicitly set
             this._removeSlidesWidth();
@@ -469,10 +469,10 @@ export default class A11YSlider {
     private _removeSlidesWidth() {
         this.slider.style.removeProperty('display');
 
-        for (let slide of this.slides) {
+        everyElement(this.slides, slide => {
             slide.style.removeProperty('width');
             slide.style.removeProperty('flex');
-        }
+        });
     }
 
     // Update all associated a11y functionality. Should mirror _removeA11Y()
@@ -480,7 +480,7 @@ export default class A11YSlider {
         // Reset all a11y functionality to default beforehand
         this._removeA11Y();
 
-        for (let slide of this.slides) {
+        everyElement(this.slides, slide => {
             const focusableItems = slide.querySelectorAll(this._focusable);
 
             // If slide is not visible make the slide wrapper not focusable
@@ -489,12 +489,12 @@ export default class A11YSlider {
                 slide.setAttribute('aria-hidden', 'true');
             }
 
-            for (let focusableItem of focusableItems) {
+            everyElement(focusableItems, focusableItem => {
                 if (!slide.classList.contains(this._visibleClass)) {
                     focusableItem.setAttribute('tabindex', '-1');
                 }
-            }
-        }
+            });
+        });
 
         // Buttons will add disabled state if first/last slide
         if (this.options.infinite === false) {
@@ -521,7 +521,7 @@ export default class A11YSlider {
 
     // Reset all associated a11y functionality. Should mirror _updateA11Y()
     private _removeA11Y() {
-        for (let slide of this.slides) {
+        everyElement(this.slides, slide => {
             const focusableItems = slide.querySelectorAll(this._focusable);
 
             // Remove a11y for each slide wrapper
@@ -529,10 +529,10 @@ export default class A11YSlider {
             slide.removeAttribute('aria-hidden');
 
             // Reset a11y attributes for slide inner elements
-            for (let focusableItem of focusableItems) {
+            everyElement(focusableItems, focusableItem => {
                 focusableItem.removeAttribute('tabindex');
-            }
-        }
+            });
+        });
 
         // Buttons could potentially have disabled state so removing
         everyElement(this.options.prevArrow, prevArrow => prevArrow.removeAttribute('disabled'));
@@ -644,7 +644,7 @@ export default class A11YSlider {
             }
 
             // Reset children active class if exist
-            for (let dot of this.dots.children) dot.querySelector('button')?.classList.remove('active');
+            everyElement(this.dots.children, dot => dot.querySelector('button')?.classList.remove('active'))
 
             // Add class to active dot
             this.dots.children[activeIndex].querySelector('button')?.classList.add('active');
@@ -835,13 +835,13 @@ export default class A11YSlider {
         const sliderPosition = this.slider.scrollLeft - 1 < 0 ? 0 : this.slider.scrollLeft - 1;
 
         // Only detects items in the visible viewport of the parent element
-        for (let slide of this.slides) {
+        everyElement(this.slides, slide => {
             const slideOffset = slide.offsetLeft;
 
             if (slideOffset >= sliderPosition && slideOffset < (sliderPosition + sliderWidth)) {
                 visibleSlides.push(slide);
             }
-        }
+        });
 
         // Add back the original styles
         this.slider.style.borderWidth = borderStyle;
