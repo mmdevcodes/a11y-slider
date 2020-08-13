@@ -136,6 +136,15 @@
                 width: 33.333% !important;
             }
         }
+
+        .custom-area {
+            border: 1px solid mediumaquamarine;
+            padding: 2px;
+        }
+
+        .custom-area .a11y-slider-dots li > * {
+            cursor: pointer;
+        }
     </style>
     <h2>(100% CSS)</h2>
     <ul id="s-1" class="slider">
@@ -179,7 +188,7 @@
             <div>5</div>
         </li>
     </ul>
-    <h2>(Responsive enabled | 6 at 1280px)</h2>
+    <h2>(Responsive enabled | 4 at 1280px)</h2>
     <ul id="s-3" class="slider">
         <li>
             <div>1</div>
@@ -212,6 +221,8 @@
             <div>10</div>
         </li>
     </ul>
+    Below example of moving elements and custom paging:
+    <div class="custom-area"></div>
     <h2>(mobile only | custom prev/next)</h2>
     <button id="prev">Prev</button>
     <button id="next">Next</button>
@@ -229,6 +240,9 @@
     <script src="a11y-slider.js"></script>
     <script>
         var slider1 = document.querySelector('#s-1');
+        var slider2 = document.querySelector('#s-2');
+        var slider3 = document.querySelector('#s-3');
+        var slider4 = document.querySelector('#s-4');
 
         slider1.addEventListener('init', function (e) {
             console.log('init event');
@@ -242,21 +256,34 @@
             console.log(e.detail.currentSlide);
         });
 
-        var a11ySlider = new A11YSlider(slider1, {
+        window.a11ySlider = new A11YSlider(slider1, {
             infinite: true
         });
 
-        var a11ySlider2 = new A11YSlider(document.querySelector('#s-2'), {
+        window.a11ySlider2 = new A11YSlider(slider2, {
             adaptiveHeight: true,
             autoplay: true,
             autoplaySpeed: 2000,
             infinite: false
         });
 
-        var a11ySlider3 = new A11YSlider(document.querySelector('#s-3'), {
+        slider3.addEventListener('init', function (e) {
+            var dots = e.detail.a11ySlider.dots;
+            var autoplayBtn = e.detail.a11ySlider.autoplayBtn;
+            var customArea = document.querySelector('.custom-area');
+
+            customArea.insertAdjacentElement('beforeend', dots);
+            customArea.insertAdjacentElement('beforeend', autoplayBtn);
+
+
+            console.log('init event', e.detail.a11ySlider);
+        });
+
+        window.a11ySlider3 = new A11YSlider(slider3, {
             slidesToShow: 1,
             arrows: true, // arrows enabled 767px and down
             dots: false,
+            autoplay: true,
             responsive: {
                 768: {
                     slidesToShow: 2,
@@ -270,10 +297,13 @@
                     slidesToShow: 4,
                     dots: true // dots enabled 1280px and up
                 }
+            },
+            customPaging: function(index, a11ySlider) {
+                return '<div class="mycustombtn">' + (index + 1) + '</div>';
             }
         });
 
-        var a11ySlider4 = new A11YSlider(document.querySelector('#s-4'), {
+        window.a11ySlider4 = new A11YSlider(slider4, {
             prevArrow: document.querySelector('#prev'),
             nextArrow: document.querySelector('#next')
         });

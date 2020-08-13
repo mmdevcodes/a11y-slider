@@ -75,6 +75,7 @@ The `element` is the targeted slider element. The `options` is an optional param
 | infinite            | Boolean          | Default: `true` <br>Makes the slider infinitely loop                                                                                                                                      |
 | disable             | Boolean          | Default: `false` <br>Disables the slider                                                                                                                                                  |
 | responsive          | Object \| Null   | Default: `null` <br>Define options for different viewport widths. See [responsive example](#responsive-option-example)                                                                    |
+| customPaging        | Function \| Null   | Default: `null` <br>Define your own custom dots template                                                                    |
 
 ### Responsive Option Example
 
@@ -100,6 +101,30 @@ const slider = new A11YSlider(document.querySelector('.slider'), {
     }
   }
 });
+```
+
+### Custom Paging Example
+
+If you would like your own custom HTML for each dot you can pass in your own function. It must return a string and then this function will be called to create HTML for each individual dot. Note that dots will still be wrapped in a `<ul>`.
+
+```js
+const slider = new A11YSlider(document.querySelector('.slider'), {
+  dots: true,
+  customPaging: function(index, a11ySlider) {
+      return '<button class="mycustombtn">' + index + '</button>';
+  }
+});
+```
+
+Will output to:
+
+```html
+<ul class="a11y-slider-dots">
+  <li><button class="mycustombtn">0</button></li>
+  <li><button class="mycustombtn">1</button></li>
+  <li><button class="mycustombtn">2</button></li>
+  <li><button class="mycustombtn">3</button></li>
+</ul>
 ```
 
 ## Methods

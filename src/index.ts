@@ -34,6 +34,10 @@ interface ActiveVisibleSlides {
   (visibleSlides: HTMLElement[], activeSlide: HTMLElement): void;
 }
 
+interface CustomPaging {
+  (index: number, a11ySlider: A11YSlider): string;
+}
+
 type Options = {
   /** Adds a container element around the slider */
   container?: boolean;
@@ -65,6 +69,8 @@ type Options = {
   disable?: boolean;
   /** Define options for different viewport widths */
   responsive?: object | null;
+  /** Define your own custom dots template */
+  customPaging?: CustomPaging | null
 };
 
 export default class A11YSlider {
@@ -79,7 +85,7 @@ export default class A11YSlider {
   private _generateDotsDebounced: any;
   private _updateScrollPosition: any;
   private _autoplayTimer: IsAutoplaying;
-  private _autoplayBtn: HTMLElement;
+  private autoplayBtn: HTMLElement;
   private _pauseOnMouseLeave: boolean;
   private _skipBtns: HTMLElement[];
   public slider: HTMLElement;
@@ -94,7 +100,7 @@ export default class A11YSlider {
   constructor(element: HTMLElement, options?: Options) {
     // Enforce `element` parameter
     if (!(element instanceof HTMLElement)) {
-      throw new Error('The required input [element] must be an HTML Element');
+      throw new Error('The required input [element] must be an HTMLElement');
     }
 
     // Make sure options parameter is correct
@@ -114,7 +120,7 @@ export default class A11YSlider {
     this._focusable =
       'a, area, input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]';
     this._autoplayTimer = IsAutoplaying.No;
-    this._autoplayBtn = createElement(
+    this.autoplayBtn = createElement(
       `<button type="button" class="a11y-slider-autoplay">Toggle slider autoplay</button>`
     );
     this._pauseOnMouseLeave = false;
@@ -150,7 +156,8 @@ export default class A11YSlider {
       centerMode: false,
       infinite: true,
       disable: false,
-      responsive: null
+      responsive: null,
+      customPaging: null
     };
 
     // Set user-inputted options if available
@@ -650,10 +657,14 @@ export default class A11YSlider {
 
     for (let i = 0; i < this._getDotCount(); i++) {
       const dotLi = createElement('<li></li>');
-      const dotBtn = createElement('<button type="button"></button>');
+      let dotBtn: HTMLElement;
 
-      // Add text
-      dotBtn.textContent = `Move slider to item #${i + 1}`;
+      if (this.options.customPaging) {
+        dotBtn = createElement(this.options.customPaging(i, this));
+      } else {
+        dotBtn = createElement('<button type="button"></button>');
+        dotBtn.textContent = `Move slider to item #${i + 1}`;
+      }
 
       // Event handlers to switch to slide
       const switchToSlide = (event: Event) => {
@@ -728,10 +739,10 @@ export default class A11YSlider {
 
   private _enableAutoplay() {
     // Add event listeners for autoplay
-    this._autoplayBtn.addEventListener('click', this._handleAutoplay, {
+    this.autoplayBtn.addEventListener('click', this._handleAutoplay, {
       passive: true
     });
-    this._autoplayBtn.addEventListener('keypress', this._handleAutoplay, {
+    this.autoplayBtn.addEventListener('keypress', this._handleAutoplay, {
       passive: true
     });
 
@@ -745,7 +756,7 @@ export default class A11YSlider {
     }
 
     // Add autoplay toggle button to DOM
-    this.slider.insertAdjacentElement('beforebegin', this._autoplayBtn);
+    this.slider.insertAdjacentElement('beforebegin', this.autoplayBtn);
 
     // Start autoplaying
     this._toggleAutoplay(AutoplaySwitch.Enable);
@@ -756,14 +767,13 @@ export default class A11YSlider {
     this._toggleAutoplay(AutoplaySwitch.Disable);
 
     // Remove event listeners for autoplay
-    this._autoplayBtn.removeEventListener('click', this._handleAutoplay);
-    this._autoplayBtn.removeEventListener('keypress', this._handleAutoplay);
+    this.autoplayBtn.removeEventListener('click', this._handleAutoplay);
+    this.autoplayBtn.removeEventListener('keypress', this._handleAutoplay);
     this.slider.removeEventListener('mouseenter', this._handleAutoplayHover);
     this.slider.removeEventListener('mouseleave', this._handleAutoplayHover);
 
     // Remove toggle button from DOM
-    this._autoplayBtn.parentNode &&
-      this._autoplayBtn.parentNode.removeChild(this._autoplayBtn);
+      this.autoplayBtn.parentNode?.removeChild(this.autoplayBtn);
   }
 
   private _toggleAutoplay(setState: AutoplaySwitch) {
@@ -774,7 +784,7 @@ export default class A11YSlider {
       }, this.options.autoplaySpeed);
 
       // Set autoplay button state
-      this._autoplayBtn.setAttribute('data-autoplaying', 'true');
+      this.autoplayBtn.setAttribute('data-autoplaying', 'true');
     };
 
     const stopAutoplaying = () => {
@@ -785,7 +795,7 @@ export default class A11YSlider {
       this._autoplayTimer = IsAutoplaying.No;
 
       // Set autoplay button state
-      this._autoplayBtn.setAttribute('data-autoplaying', 'false');
+      this.autoplayBtn.setAttribute('data-autoplaying', 'false');
     };
 
     if (setState === AutoplaySwitch.Enable) {

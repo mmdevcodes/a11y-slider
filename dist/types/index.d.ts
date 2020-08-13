@@ -3,6 +3,9 @@ declare enum SliderState {
     Enabled = 1,
     Disabled = 0
 }
+interface CustomPaging {
+    (index: number, a11ySlider: A11YSlider): string;
+}
 declare type Options = {
     /** Adds a container element around the slider */
     container?: boolean;
@@ -34,6 +37,8 @@ declare type Options = {
     disable?: boolean;
     /** Define options for different viewport widths */
     responsive?: object | null;
+    /** Define your own custom dots template */
+    customPaging?: CustomPaging | null;
 };
 export default class A11YSlider {
     private _activeClass;
@@ -47,7 +52,7 @@ export default class A11YSlider {
     private _generateDotsDebounced;
     private _updateScrollPosition;
     private _autoplayTimer;
-    private _autoplayBtn;
+    private autoplayBtn;
     private _pauseOnMouseLeave;
     private _skipBtns;
     slider: HTMLElement;
