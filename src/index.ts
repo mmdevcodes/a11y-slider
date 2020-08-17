@@ -785,6 +785,12 @@ export default class A11YSlider {
 
       // Set autoplay button state
       this.autoplayBtn.setAttribute('data-autoplaying', 'true');
+
+      // Dispatch custom event
+      this._dispatchEvent('autoplayStart', {
+        currentSlide: this.activeSlide,
+        a11ySlider: this
+      });
     };
 
     const stopAutoplaying = () => {
@@ -796,6 +802,12 @@ export default class A11YSlider {
 
       // Set autoplay button state
       this.autoplayBtn.setAttribute('data-autoplaying', 'false');
+
+      // Dispatch custom event
+      this._dispatchEvent('autoplayStop', {
+        currentSlide: this.activeSlide,
+        a11ySlider: this
+      });
     };
 
     if (setState === AutoplaySwitch.Enable) {

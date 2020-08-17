@@ -256,6 +256,14 @@
             console.log(e.detail.currentSlide);
         });
 
+        slider2.addEventListener('autoplayStart', function (e) {
+            console.log('started autoplaying', e.detail.currentSlide);
+        });
+
+        slider2.addEventListener('autoplayStop', function (e) {
+            console.log('stopped autoplaying', e.detail.currentSlide);
+        });
+
         window.a11ySlider = new A11YSlider(slider1, {
             infinite: true
         });

@@ -157,12 +157,14 @@ const slider = new A11YSlider(sliderEl, {
 });
 ```
 
-| Event        | Detail                              | Description                         |
-| ------------ | ----------------------------------- | ----------------------------------- |
-| init         | a11yslider                          | Fires after slider initialization   |
-| beforeChange | currentSlide, nextSlide, a11yslider | Fires before slide change           |
-| afterChange  | currentSlide, a11yslider            | Fires after slide change            |
-| destroy      | a11yslider                          | Fires after the slider is destroyed |
+| Event         | Detail                              | Description                         |
+| ------------- | ----------------------------------- | ----------------------------------- |
+| init          | a11yslider                          | Fires after slider initialization   |
+| beforeChange  | currentSlide, nextSlide, a11yslider | Fires before slide change           |
+| afterChange   | currentSlide, a11yslider            | Fires after slide change            |
+| autoplayStart | currentSlide, a11yslider            | Fires when autoplay starts          |
+| autoplayStop  | currentSlide, a11yslider            | Fires when autoplay stops           |
+| destroy       | a11yslider                          | Fires after the slider is destroyed |
 
 Events listeners should be added before initializing the slider if possible. For example `init` will require it.
 
