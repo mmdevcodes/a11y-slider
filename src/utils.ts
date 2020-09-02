@@ -1,6 +1,11 @@
 export const createElement = (html: string): HTMLElement => {
-  return new DOMParser().parseFromString(html, 'text/html').body
-    .firstChild as HTMLElement;
+  const el = new DOMParser().parseFromString(html, 'text/html').body.firstChild;
+
+  if (el instanceof HTMLElement) {
+    return el
+  } else {
+    throw new Error("Supplied markup does not create an HTML Element");
+  }
 };
 
 /**
