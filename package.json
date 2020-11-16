@@ -10,7 +10,7 @@
     "rollup:watch": "rollup -c -w",
     "build:types": "tsc --emitDeclarationOnly",
     "prebuild": "rimraf dist",
-    "version": "npm run build && git add *",
+    "version": "npm run build && git add -u",
     "release": "np patch && cd web/ && npm run deployLatest"
   },
   "main": "dist/a11y-slider.cjs.js",
