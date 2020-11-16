@@ -39,6 +39,8 @@ declare type Options = {
     responsive?: object | null;
     /** Define your own custom dots template */
     customPaging?: CustomPaging | null;
+    /** Swipe functionality */
+    swipe?: boolean;
 };
 export default class A11YSlider {
     private _activeClass;
@@ -58,11 +60,16 @@ export default class A11YSlider {
     slider: HTMLElement;
     slides: HTMLCollectionOf<HTMLElement>;
     dots: HTMLElement | null;
+    swipe: boolean;
     activeSlide: HTMLElement;
     visibleSlides: HTMLElement[];
     sliderContainer: HTMLElement;
     options: Options;
     sliderEnabled: SliderState;
+    modernBrowser: boolean;
+    mouseDown: boolean;
+    swipeStartX: number;
+    swipeX: number;
     constructor(element: HTMLElement, options?: Options);
     private _init;
     private _checkShouldEnable;
@@ -83,6 +90,11 @@ export default class A11YSlider {
     private _updateDots;
     private _enableAutoplay;
     private _disableAutoplay;
+    private _enableSwipe;
+    private _swipeMouseDown;
+    private _swipeMouseUp;
+    private _swipeMouseMove;
+    private _disableSwipe;
     private _toggleAutoplay;
     private _goPrevOrNext;
     /**
