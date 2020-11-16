@@ -70,7 +70,9 @@ type Options = {
   /** Define options for different viewport widths */
   responsive?: object | null;
   /** Define your own custom dots template */
-  customPaging?: CustomPaging | null
+  customPaging?: CustomPaging | null;
+  /** Swipe functionality */
+  swipe?: boolean;
 };
 
 export default class A11YSlider {
@@ -91,11 +93,16 @@ export default class A11YSlider {
   public slider: HTMLElement;
   public slides: HTMLCollectionOf<HTMLElement>;
   public dots: HTMLElement | null;
+  public swipe: boolean;
   public activeSlide: HTMLElement;
   public visibleSlides: HTMLElement[];
   public sliderContainer: HTMLElement;
   public options: Options;
   public sliderEnabled: SliderState;
+  public modernBrowser: boolean;
+  public mouseDown: boolean;
+  public swipeStartX: number;
+  public swipeX: number;
 
   constructor(element: HTMLElement, options?: Options) {
     // Enforce `element` parameter
@@ -126,9 +133,14 @@ export default class A11YSlider {
     this._pauseOnMouseLeave = false;
     this._skipBtns = [];
     this.dots = null;
+    this.swipe = true;
     this.activeSlide = this.slides[0];
     this.visibleSlides = [];
     this.sliderEnabled = SliderState.Disabled;
+    this.modernBrowser = !!HTMLElement.prototype.scrollTo;
+    this.mouseDown = false;
+    this.swipeStartX = 0;
+    this.swipeX = 0;
     this._hasCustomArrows =
       (options && options.prevArrow) || (options && options.nextArrow)
         ? true
@@ -157,13 +169,14 @@ export default class A11YSlider {
       infinite: true,
       disable: false,
       responsive: null,
-      customPaging: null
+      customPaging: null,
+      swipe: true
     };
 
     // Set user-inputted options if available
     this.options = { ...this.options, ...options };
 
-    // Binding
+    // Bindings
     this._handlePrev = this._handlePrev.bind(this);
     this._handleNext = this._handleNext.bind(this);
     this._handleAutoplay = this._handleAutoplay.bind(this);
@@ -180,6 +193,9 @@ export default class A11YSlider {
     );
     this._handleScroll = debounce(this._handleScroll.bind(this), 10); // Calls _scrollFinish
     this._scrollFinish = debounce(this._scrollFinish.bind(this), 175); // May fire twice depending on browser
+    this._swipeMouseDown = this._swipeMouseDown.bind(this);
+    this._swipeMouseUp = this._swipeMouseUp.bind(this);
+    this._swipeMouseMove = this._swipeMouseMove.bind(this);
 
     // Initialize slider
     this._init();
@@ -324,6 +340,9 @@ export default class A11YSlider {
 
     // On resize make sure to update scroll position as content may change in width/height
     window.addEventListener('resize', this._updateScrollPosition);
+
+    // Add swipe event listeners
+    if (this.options.swipe) this._enableSwipe();
   }
 
   // Disable all functionality for the slider. Should mirror _enableSlider()
@@ -385,8 +404,14 @@ export default class A11YSlider {
     // Stop autoplay if enabled
     if (this.options.autoplay) this._disableAutoplay();
 
+    // Remove swipe event listeners
+    this._disableSwipe();
+
     // Remove scroll position update check
     window.removeEventListener('resize', this._updateScrollPosition);
+
+    // Remove swipe functionality
+    if (this.options.swipe) this._disableSwipe();
   }
 
   // Add all CSS needed for the slider. Should mirror _removeCSS()
@@ -773,7 +798,54 @@ export default class A11YSlider {
     this.slider.removeEventListener('mouseleave', this._handleAutoplayHover);
 
     // Remove toggle button from DOM
-      this.autoplayBtn.parentNode?.removeChild(this.autoplayBtn);
+    this.autoplayBtn.parentNode?.removeChild(this.autoplayBtn);
+  }
+
+  // Referenced https://codepen.io/fredericrous/pen/xxVXJYX
+  private _enableSwipe() {
+    if (this.options.swipe) {
+      this.slider.addEventListener('mousedown', this._swipeMouseDown);
+      this.slider.addEventListener('mouseleave', this._swipeMouseUp);
+      this.slider.addEventListener('mouseup', this._swipeMouseUp);
+      this.slider.addEventListener('mousemove', this._swipeMouseMove);
+    }
+  }
+
+  private _swipeMouseDown(e: MouseEvent) {
+    this.mouseDown = true;
+    this.slider.classList.add('a11y-slider-scrolling');
+    this.swipeStartX = e.pageX - this.slider.offsetLeft;
+    this.swipeX = this.slider.scrollLeft;
+  }
+
+  private _swipeMouseUp() {
+    this.mouseDown = false;
+    this.slider.classList.remove('a11y-slider-scrolling');
+
+    if (this.modernBrowser) {
+      this.slider.scroll({
+        left: this.slider.scrollLeft - 1,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  private _swipeMouseMove(e: MouseEvent) {
+    if (!this.mouseDown) return;
+    e.preventDefault();
+
+    const scrollSpeed = 2;
+    const x = e.pageX - this.slider.offsetLeft;
+    const walk = (x - this.swipeStartX) * scrollSpeed;
+
+    this.slider.scrollLeft = this.swipeX - walk;
+  }
+
+  private _disableSwipe() {
+    this.slider.removeEventListener('mousedown', this._swipeMouseDown);
+    this.slider.removeEventListener('mouseleave', this._swipeMouseUp);
+    this.slider.removeEventListener('mouseup', this._swipeMouseUp);
+    this.slider.removeEventListener('mousemove', this._swipeMouseMove);
   }
 
   private _toggleAutoplay(setState: AutoplaySwitch) {
@@ -853,7 +925,6 @@ export default class A11YSlider {
    * Moves slider to target element
    */
   public scrollToSlide(target: HTMLElement | number) {
-    const modernBrowser: boolean = !!HTMLElement.prototype.scrollTo;
     const originalPosition = this.slider.scrollLeft;
     let targetSlide: HTMLElement;
 
@@ -876,7 +947,7 @@ export default class A11YSlider {
     if (this.options.adaptiveHeight === true) this._updateHeight(targetSlide);
 
     // Move slider to specific item
-    if (modernBrowser) {
+    if (this.modernBrowser) {
       this.slider.scroll({
         left: targetSlide.offsetLeft,
         behavior: 'smooth'

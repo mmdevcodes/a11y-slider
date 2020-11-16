@@ -152,10 +152,15 @@
             <div>1</div>
         </li>
         <li>
-            <div>2</div>
+            <div>
+                <a href="//google.com">2</a>
+            </div>
         </li>
         <li>
-            <div>3</div>
+            <div>
+                <div>3</div>
+                <button id="btnClickTest">test</button>
+            </div>
         </li>
         <li>
             <div>4</div>
@@ -315,6 +320,10 @@
             prevArrow: document.querySelector('#prev'),
             nextArrow: document.querySelector('#next')
         });
+
+        document.getElementById('btnClickTest').addEventListener('click', function (e) {
+            console.log(e);
+        })
 
         /* Web example */
         // const sliderEl = document.querySelector('.slider');

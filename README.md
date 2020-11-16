@@ -75,7 +75,8 @@ The `element` is the targeted slider element. The `options` is an optional param
 | infinite            | Boolean          | Default: `true` <br>Makes the slider infinitely loop                                                                                                                                      |
 | disable             | Boolean          | Default: `false` <br>Disables the slider                                                                                                                                                  |
 | responsive          | Object \| Null   | Default: `null` <br>Define options for different viewport widths. See [responsive example](#responsive-option-example)                                                                    |
-| customPaging        | Function \| Null   | Default: `null` <br>Define your own custom dots template                                                                    |
+| customPaging        | Function \| Null | Default: `null` <br>Define your own custom dots template                                                                    |
+| swipe               | Boolean          | Default: `true` <br>Enable swiping                                                                                          |
 
 ### Responsive Option Example
 

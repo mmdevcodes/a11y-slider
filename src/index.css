@@ -57,3 +57,16 @@
 .a11y-slider-hide {
   display: none;
 }
+
+.a11y-slider-scrolling {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
+  -webkit-scroll-snap-type: none;
+      -ms-scroll-snap-type: none;
+          scroll-snap-type: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  scroll-behavior: auto;
+}
