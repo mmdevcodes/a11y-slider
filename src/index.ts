@@ -103,6 +103,7 @@ export default class A11YSlider {
   public mouseDown: boolean;
   public swipeStartX: number;
   public swipeX: number;
+  public swipeXCached: number;
 
   constructor(element: HTMLElement, options?: Options) {
     // Enforce `element` parameter
@@ -141,6 +142,7 @@ export default class A11YSlider {
     this.mouseDown = false;
     this.swipeStartX = 0;
     this.swipeX = 0;
+    this.swipeXCached = 0;
     this._hasCustomArrows =
       (options && options.prevArrow) || (options && options.nextArrow)
         ? true
@@ -816,15 +818,17 @@ export default class A11YSlider {
     this.slider.classList.add('a11y-slider-scrolling');
     this.swipeStartX = e.pageX - this.slider.offsetLeft;
     this.swipeX = this.slider.scrollLeft;
+    this.swipeXCached = this.slider.scrollLeft;
   }
 
   private _swipeMouseUp() {
+    if (!this.mouseDown) return;
     this.mouseDown = false;
     this.slider.classList.remove('a11y-slider-scrolling');
 
     if (this.modernBrowser) {
       this.slider.scroll({
-        left: this.slider.scrollLeft - 1,
+        left: this.swipeXCached - 1,
         behavior: 'smooth'
       });
     }
@@ -839,6 +843,8 @@ export default class A11YSlider {
     const walk = (x - this.swipeStartX) * scrollSpeed;
 
     this.slider.scrollLeft = this.swipeX - walk;
+    // Safari has a bug where it doesn't save values properly so caching it for use later
+    this.swipeXCached = this.slider.scrollLeft;
   }
 
   private _disableSwipe() {
