@@ -70,6 +70,7 @@ export default class A11YSlider {
     mouseDown: boolean;
     swipeStartX: number;
     swipeX: number;
+    swipeXCached: number;
     constructor(element: HTMLElement, options?: Options);
     private _init;
     private _checkShouldEnable;
