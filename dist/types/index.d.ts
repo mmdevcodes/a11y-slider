@@ -118,6 +118,7 @@ export default class A11YSlider {
     private _handleNext;
     private _handleAutoplay;
     private _handleAutoplayHover;
+    private _handleAutoplayEvent;
     private _handleScroll;
     private _scrollFinish;
     private _dispatchEvent;
