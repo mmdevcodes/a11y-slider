@@ -183,6 +183,7 @@ export default class A11YSlider {
     this._handleNext = this._handleNext.bind(this);
     this._handleAutoplay = this._handleAutoplay.bind(this);
     this._handleAutoplayHover = this._handleAutoplayHover.bind(this);
+    this._handleAutoplayEvent = this._handleAutoplayEvent.bind(this);
     this._checkShouldEnableDebounced = debounce(
       this._checkShouldEnable.bind(this),
       250
@@ -772,6 +773,12 @@ export default class A11YSlider {
     this.autoplayBtn.addEventListener('keypress', this._handleAutoplay, {
       passive: true
     });
+    this.slider.addEventListener('click', this._handleAutoplayEvent, {
+      passive: true
+    });
+    this.slider.addEventListener('touchstart', this._handleAutoplayEvent, {
+      passive: true
+    });
 
     if (this.options.autoplayHoverPause) {
       this.slider.addEventListener('mouseenter', this._handleAutoplayHover, {
@@ -796,6 +803,8 @@ export default class A11YSlider {
     // Remove event listeners for autoplay
     this.autoplayBtn.removeEventListener('click', this._handleAutoplay);
     this.autoplayBtn.removeEventListener('keypress', this._handleAutoplay);
+    this.slider.removeEventListener('click', this._handleAutoplayEvent);
+    this.slider.removeEventListener('touchstart', this._handleAutoplayEvent);
     this.slider.removeEventListener('mouseenter', this._handleAutoplayHover);
     this.slider.removeEventListener('mouseleave', this._handleAutoplayHover);
 
@@ -1103,6 +1112,11 @@ export default class A11YSlider {
         this._pauseOnMouseLeave = false;
       }
     }
+  }
+
+  private _handleAutoplayEvent(_event: Event) {
+    this._pauseOnMouseLeave = false;
+    this._toggleAutoplay(AutoplaySwitch.Disable);
   }
 
   private _handleScroll() {
