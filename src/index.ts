@@ -834,10 +834,11 @@ export default class A11YSlider {
     if (!this.mouseDown) return;
     this.mouseDown = false;
     this.slider.classList.remove('a11y-slider-scrolling');
+    const inRange = (this.swipeXCached - (this.swipeX - 1)) * (this.swipeXCached - (this.swipeX + 1)) <= 0;
 
-    if (this.modernBrowser) {
+    if (this.modernBrowser) {      
       this.slider.scroll({
-        left: this.swipeXCached - 1,
+        left: inRange ? this.swipeXCached : this.swipeXCached - 1,
         behavior: 'smooth'
       });
     }
