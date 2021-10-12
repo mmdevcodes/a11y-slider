@@ -832,9 +832,12 @@ export default class A11YSlider {
 
   private _swipeMouseUp() {
     if (!this.mouseDown) return;
+
+    // If the moved slider offset is within 1 pixel it will not trigger a move
+    const inRange = (this.swipeXCached - (this.swipeX - 1)) * (this.swipeXCached - (this.swipeX + 1)) <= 0;
+
     this.mouseDown = false;
     this.slider.classList.remove('a11y-slider-scrolling');
-    const inRange = (this.swipeXCached - (this.swipeX - 1)) * (this.swipeXCached - (this.swipeX + 1)) <= 0;
 
     if (this.modernBrowser) {      
       this.slider.scroll({
