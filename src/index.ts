@@ -727,7 +727,7 @@ export default class A11YSlider {
   private _getDotCount() {
     let totalSlides: number = this.slides.length;
     let slidesToShow: number =
-      this.options.slidesToShow || this.visibleSlides.length;
+      this.options.slidesToShow || this.visibleSlides.length || 1;
     let dots: number = totalSlides - slidesToShow + 1;
 
     return dots;
