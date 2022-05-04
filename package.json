@@ -11,7 +11,8 @@
     "build:types": "tsc --emitDeclarationOnly",
     "prebuild": "rimraf dist",
     "version": "npm run build && git add -u",
-    "release": "np patch && cd web/ && npm run deployLatest"
+    "release": "np patch && cd web/ && npm run deployLatest",
+    "test": ""
   },
   "main": "dist/a11y-slider.cjs.js",
   "module": "dist/a11y-slider.esm.js",
