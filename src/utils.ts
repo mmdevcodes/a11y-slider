@@ -194,3 +194,25 @@ export const getSubpixelStyle = (
 
   return getNumberStyle(element, style, styles);
 };
+
+export const getPreviousSiblings = (element: HTMLElement, amount = 10) => {
+  const elements = [];
+  let sibling = element.previousSibling as HTMLElement | null;
+  while (sibling && elements.length < amount) {
+    elements.push(sibling);
+    sibling = sibling.previousSibling as HTMLElement | null;
+  }
+  return elements;
+};
+
+export const getNextSiblings = (element: HTMLElement, amount = 10) => {
+  const elements = [];
+  let sibling = element.nextSibling as HTMLElement | null;
+
+  while (sibling && elements.length < amount) {
+    elements.push(sibling);
+    sibling = sibling.nextSibling as HTMLElement | null;
+  }
+
+  return elements;
+};

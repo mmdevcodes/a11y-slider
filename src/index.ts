@@ -6,7 +6,9 @@ import {
   isInteger,
   isObject,
   everyElement,
-  getSubpixelStyle
+  getSubpixelStyle,
+  getNextSiblings,
+  getPreviousSiblings
 } from './utils';
 import './index.css';
 
@@ -482,8 +484,9 @@ export default class A11YSlider {
     // Create a new JS media query for initial options for the lowest MQ and down
     breakpoints.push({
       mql: window.matchMedia(
-        `screen and (max-width: ${Number.parseInt(responsiveOptions[0][0]) -
-          1}px)`
+        `screen and (max-width: ${
+          Number.parseInt(responsiveOptions[0][0]) - 1
+        }px)`
       ),
       options: initialOptions as Options
     });
@@ -497,8 +500,9 @@ export default class A11YSlider {
         // If there are more media queries after this then create a stopping point
         if (i !== responsiveOptions.length - 1) {
           mqlString = mqlString.concat(
-            ` and (max-width: ${Number.parseInt(responsiveOptions[i + 1][0]) -
-              1}px)`
+            ` and (max-width: ${
+              Number.parseInt(responsiveOptions[i + 1][0]) - 1
+            }px)`
           );
         }
 
@@ -593,9 +597,8 @@ export default class A11YSlider {
       const firstSlide = this.slider.firstElementChild as HTMLElement;
       const lastSlide = this.slider.lastElementChild as HTMLElement;
       const firstVisibleSlide = this.visibleSlides[0];
-      const lastVisibleSlide = this.visibleSlides[
-        this.visibleSlides.length - 1
-      ];
+      const lastVisibleSlide =
+        this.visibleSlides[this.visibleSlides.length - 1];
 
       // If current active slide is the first element then disable prev
       if (firstVisibleSlide === firstSlide) {
@@ -666,8 +669,19 @@ export default class A11YSlider {
   }
 
   private _removeSkipBtn() {
+    const elements = [
+      ...getPreviousSiblings(this.slider),
+      ...getNextSiblings(this.slider)
+    ];
+
     everyElement(this._skipBtns, skipBtn => {
       skipBtn.parentNode && skipBtn.parentNode.removeChild(skipBtn);
+    });
+
+    everyElement(elements, element => {
+      if (element.classList.contains('a11y-slider-sr-only')) {
+        element.parentNode && element.parentNode.removeChild(element);
+      }
     });
   }
 
@@ -735,10 +749,18 @@ export default class A11YSlider {
 
   private _removeDots() {
     window.removeEventListener('resize', this._generateDotsDebounced);
+    
+    const elements = getNextSiblings(this.slider);
 
     if (this.dots instanceof HTMLElement) {
       this.dots.parentNode && this.dots.parentNode.removeChild(this.dots);
     }
+
+    everyElement(elements, element => {
+      if (element.classList.contains(this._dotsClass)) {
+        element.parentNode && element.parentNode.removeChild(element);
+      }
+    });
   }
 
   private _updateDots(activeSlide: HTMLElement) {
@@ -834,12 +856,15 @@ export default class A11YSlider {
     if (!this.mouseDown) return;
 
     // If the moved slider offset is within 1 pixel it will not trigger a move
-    const inRange = (this.swipeXCached - (this.swipeX - 1)) * (this.swipeXCached - (this.swipeX + 1)) <= 0;
+    const inRange =
+      (this.swipeXCached - (this.swipeX - 1)) *
+        (this.swipeXCached - (this.swipeX + 1)) <=
+      0;
 
     this.mouseDown = false;
     this.slider.classList.remove('a11y-slider-scrolling');
 
-    if (this.modernBrowser) {      
+    if (this.modernBrowser) {
       this.slider.scroll({
         left: inRange ? this.swipeXCached : this.swipeXCached - 1,
         behavior: 'smooth'
@@ -1064,9 +1089,8 @@ export default class A11YSlider {
     if (explicitActive) {
       this.activeSlide = explicitActive;
     } else if (this.options.centerMode === true) {
-      this.activeSlide = this.visibleSlides[
-        Math.floor((this.visibleSlides.length - 1) / 2)
-      ];
+      this.activeSlide =
+        this.visibleSlides[Math.floor((this.visibleSlides.length - 1) / 2)];
     } else {
       this.activeSlide = visibleSlides[0] ?? this.slides[0];
     }
