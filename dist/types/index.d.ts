@@ -68,6 +68,7 @@ export default class A11YSlider {
     sliderEnabled: SliderState;
     modernBrowser: boolean;
     mouseDown: boolean;
+    touchStart: boolean;
     swipeStartX: number;
     swipeX: number;
     swipeXCached: number;
@@ -95,6 +96,9 @@ export default class A11YSlider {
     private _swipeMouseDown;
     private _swipeMouseUp;
     private _swipeMouseMove;
+    private _swipeTouchStart;
+    private _swipeTouchEnd;
+    private _swipeTouchMove;
     private _disableSwipe;
     private _toggleAutoplay;
     private _goPrevOrNext;
