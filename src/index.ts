@@ -103,6 +103,7 @@ export default class A11YSlider {
   public sliderEnabled: SliderState;
   public modernBrowser: boolean;
   public mouseDown: boolean;
+  public touchStart: boolean;
   public swipeStartX: number;
   public swipeX: number;
   public swipeXCached: number;
@@ -142,6 +143,7 @@ export default class A11YSlider {
     this.sliderEnabled = SliderState.Disabled;
     this.modernBrowser = !!HTMLElement.prototype.scrollTo;
     this.mouseDown = false;
+    this.touchStart = false;
     this.swipeStartX = 0;
     this.swipeX = 0;
     this.swipeXCached = 0;
@@ -201,6 +203,9 @@ export default class A11YSlider {
     this._swipeMouseDown = this._swipeMouseDown.bind(this);
     this._swipeMouseUp = this._swipeMouseUp.bind(this);
     this._swipeMouseMove = this._swipeMouseMove.bind(this);
+    this._swipeTouchStart = this._swipeTouchStart.bind(this);
+    this._swipeTouchEnd = this._swipeTouchEnd.bind(this);
+    this._swipeTouchMove = this._swipeTouchMove.bind(this);
 
     // Initialize slider
     this._init();
@@ -749,7 +754,7 @@ export default class A11YSlider {
 
   private _removeDots() {
     window.removeEventListener('resize', this._generateDotsDebounced);
-    
+
     const elements = getNextSiblings(this.slider);
 
     if (this.dots instanceof HTMLElement) {
@@ -841,6 +846,9 @@ export default class A11YSlider {
       this.slider.addEventListener('mouseleave', this._swipeMouseUp);
       this.slider.addEventListener('mouseup', this._swipeMouseUp);
       this.slider.addEventListener('mousemove', this._swipeMouseMove);
+      this.slider.addEventListener('touchstart', this._swipeTouchStart);
+      this.slider.addEventListener('touchend', this._swipeTouchEnd);
+      this.slider.addEventListener('touchmove', this._swipeTouchMove);
     }
   }
 
@@ -885,11 +893,55 @@ export default class A11YSlider {
     this.swipeXCached = this.slider.scrollLeft;
   }
 
+  private _swipeTouchStart(e: TouchEvent) {
+    this.touchStart = true;
+    this.slider.classList.add('a11y-slider-scrolling');
+    this.swipeStartX = e.touches[0].pageX - this.slider.offsetLeft;
+    this.swipeX = this.slider.scrollLeft;
+    this.swipeXCached = this.slider.scrollLeft;
+  }
+
+  private _swipeTouchEnd() {
+    if (!this.touchStart) return;
+
+    // If the moved slider offset is within 1 pixel it will not trigger a move
+    const inRange =
+      (this.swipeXCached - (this.swipeX - 1)) *
+        (this.swipeXCached - (this.swipeX + 1)) <=
+      0;
+
+    this.touchStart = false;
+    this.slider.classList.remove('a11y-slider-scrolling');
+
+    if (this.modernBrowser) {
+      this.slider.scroll({
+        left: inRange ? this.swipeXCached : this.swipeXCached - 1,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  private _swipeTouchMove(e: TouchEvent) {
+    if (!this.touchStart) return;
+    e.preventDefault();
+
+    const scrollSpeed = 2;
+    const x = e.touches[0].pageX - this.slider.offsetLeft;
+    const walk = (x - this.swipeStartX) * scrollSpeed;
+
+    this.slider.scrollLeft = this.swipeX - walk;
+    // Safari has a bug where it doesn't save values properly so caching it for use later
+    this.swipeXCached = this.slider.scrollLeft;
+  }
+
   private _disableSwipe() {
     this.slider.removeEventListener('mousedown', this._swipeMouseDown);
     this.slider.removeEventListener('mouseleave', this._swipeMouseUp);
     this.slider.removeEventListener('mouseup', this._swipeMouseUp);
     this.slider.removeEventListener('mousemove', this._swipeMouseMove);
+    this.slider.removeEventListener('touchstart', this._swipeTouchStart);
+    this.slider.removeEventListener('touchend', this._swipeTouchEnd);
+    this.slider.removeEventListener('touchmove', this._swipeTouchMove);
   }
 
   private _toggleAutoplay(setState: AutoplaySwitch) {
