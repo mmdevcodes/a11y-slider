@@ -8,7 +8,8 @@ import {
   everyElement,
   getSubpixelStyle,
   getNextSiblings,
-  getPreviousSiblings
+  getPreviousSiblings,
+  isPlatformiOS
 } from './utils';
 import './index.css';
 
@@ -102,6 +103,7 @@ export default class A11YSlider {
   public options: Options;
   public sliderEnabled: SliderState;
   public modernBrowser: boolean;
+  public isPlatformiOS: boolean;
   public mouseDown: boolean;
   public touchStart: boolean;
   public swipeStartX: number;
@@ -142,6 +144,7 @@ export default class A11YSlider {
     this.visibleSlides = [];
     this.sliderEnabled = SliderState.Disabled;
     this.modernBrowser = !!HTMLElement.prototype.scrollTo;
+    this.isPlatformiOS = isPlatformiOS();
     this.mouseDown = false;
     this.touchStart = false;
     this.swipeStartX = 0;
@@ -873,10 +876,16 @@ export default class A11YSlider {
     this.slider.classList.remove('a11y-slider-scrolling');
 
     if (this.modernBrowser) {
-      this.slider.scroll({
-        left: inRange ? this.swipeXCached : this.swipeXCached - 1,
-        behavior: 'smooth'
-      });
+      if (this.isPlatformiOS === true) {
+        this.slider.scroll({
+          left: inRange ? this.swipeXCached : this.swipeXCached - 1
+        });
+      } else {
+        this.slider.scroll({
+          left: inRange ? this.swipeXCached : this.swipeXCached - 1,
+          behavior: 'smooth'
+        });
+      }
     }
   }
 
@@ -914,10 +923,16 @@ export default class A11YSlider {
     this.slider.classList.remove('a11y-slider-scrolling');
 
     if (this.modernBrowser) {
-      this.slider.scroll({
-        left: inRange ? this.swipeXCached : this.swipeXCached - 1,
-        behavior: 'smooth'
-      });
+      if (this.isPlatformiOS === true) {
+        this.slider.scroll({
+          left: inRange ? this.swipeXCached : this.swipeXCached - 1
+        });
+      } else {
+        this.slider.scroll({
+          left: inRange ? this.swipeXCached : this.swipeXCached - 1,
+          behavior: 'smooth'
+        });
+      }
     }
   }
 
@@ -1044,10 +1059,16 @@ export default class A11YSlider {
 
     // Move slider to specific item
     if (this.modernBrowser) {
-      this.slider.scroll({
-        left: targetSlide.offsetLeft,
-        behavior: 'smooth'
-      });
+      if (this.isPlatformiOS === true) {
+        this.slider.scroll({
+          left: targetSlide.offsetLeft
+        });
+      } else {
+        this.slider.scroll({
+          left: targetSlide.offsetLeft,
+          behavior: 'smooth'
+        });
+      }
     } else {
       this.slider.scrollLeft = targetSlide.offsetLeft;
     }
