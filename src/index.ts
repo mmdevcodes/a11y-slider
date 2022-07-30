@@ -876,16 +876,10 @@ export default class A11YSlider {
     this.slider.classList.remove('a11y-slider-scrolling');
 
     if (this.modernBrowser) {
-      if (this.isPlatformiOS === true) {
-        this.slider.scroll({
-          left: inRange ? this.swipeXCached : this.swipeXCached - 1
-        });
-      } else {
-        this.slider.scroll({
-          left: inRange ? this.swipeXCached : this.swipeXCached - 1,
-          behavior: 'smooth'
-        });
-      }
+      this.slider.scroll({
+        left: inRange ? this.swipeXCached : this.swipeXCached - 1,
+        behavior: this.isPlatformiOS ? 'auto' : 'smooth'
+      });
     }
   }
 
@@ -923,16 +917,10 @@ export default class A11YSlider {
     this.slider.classList.remove('a11y-slider-scrolling');
 
     if (this.modernBrowser) {
-      if (this.isPlatformiOS === true) {
-        this.slider.scroll({
-          left: inRange ? this.swipeXCached : this.swipeXCached - 1
-        });
-      } else {
-        this.slider.scroll({
-          left: inRange ? this.swipeXCached : this.swipeXCached - 1,
-          behavior: 'smooth'
-        });
-      }
+      this.slider.scroll({
+        left: inRange ? this.swipeXCached : this.swipeXCached - 1,
+        behavior: this.isPlatformiOS ? 'auto' : 'smooth'
+      });
     }
   }
 
@@ -1059,16 +1047,10 @@ export default class A11YSlider {
 
     // Move slider to specific item
     if (this.modernBrowser) {
-      if (this.isPlatformiOS === true) {
-        this.slider.scroll({
-          left: targetSlide.offsetLeft
-        });
-      } else {
-        this.slider.scroll({
-          left: targetSlide.offsetLeft,
-          behavior: 'smooth'
-        });
-      }
+      this.slider.scroll({
+        left: targetSlide.offsetLeft,
+        behavior: this.isPlatformiOS ? 'auto' : 'smooth'
+      });
     } else {
       this.slider.scrollLeft = targetSlide.offsetLeft;
     }
