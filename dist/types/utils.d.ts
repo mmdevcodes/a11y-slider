@@ -18,3 +18,4 @@ export declare const everyElement: (elements: HTMLElement | HTMLCollectionOf<HTM
 export declare const getSubpixelStyle: (element: HTMLElement, style: "width" | "height", styles?: CSSStyleDeclaration | undefined) => number;
 export declare const getPreviousSiblings: (element: HTMLElement, amount?: number) => HTMLElement[];
 export declare const getNextSiblings: (element: HTMLElement, amount?: number) => HTMLElement[];
+export declare const isPlatformiOS: () => boolean;

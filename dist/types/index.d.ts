@@ -67,6 +67,7 @@ export default class A11YSlider {
     options: Options;
     sliderEnabled: SliderState;
     modernBrowser: boolean;
+    isPlatformiOS: boolean;
     mouseDown: boolean;
     touchStart: boolean;
     swipeStartX: number;
