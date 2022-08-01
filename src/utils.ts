@@ -216,3 +216,24 @@ export const getNextSiblings = (element: HTMLElement, amount = 10) => {
 
   return elements;
 };
+
+export const isPlatformiOS = (): boolean => {
+  switch (navigator.platform) {
+    case 'iPod':
+    case 'iPhone':
+    case 'iPad':
+    case 'iPod Simulator':
+    case 'iPhone Simulator':
+    case 'iPad Simulator':
+      return true;
+
+    default:
+      break;
+  }
+
+  if (navigator.userAgent.includes('Mac') && 'ontouchend' in document) {
+    return true;
+  }
+
+  return false;
+};
