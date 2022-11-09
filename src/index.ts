@@ -1209,6 +1209,8 @@ export default class A11YSlider {
     // Update CSS
     this._setCSS();
 
+    if (this.options.adaptiveHeight === true) this._updateHeight(this.activeSlide);
+
     // Dispatch custom event
     this._dispatchEvent('afterChange', {
       currentSlide: this.activeSlide,
