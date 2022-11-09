@@ -1,5 +1,6 @@
 .a11y-slider-container {
   position: relative;
+  direction: ltr;
 }
 
 .a11y-slider {
