@@ -754,7 +754,7 @@ export default class A11YSlider {
 
     return dots;
   }
-  
+
   private _removeDots() {
     window.removeEventListener('resize', this._generateDotsDebounced);
 
@@ -783,13 +783,19 @@ export default class A11YSlider {
         activeIndex = this.dots.children.length - 1;
       }
 
-      // Reset children active class if exist
-      everyElement(this.dots.children, dot =>
-        dot.querySelector('button')?.classList.remove('active')
-      );
+      // Reset children active state if exist
+      everyElement(this.dots.children, dot => {
+        dot.querySelector('button')?.classList.remove('active');
+        dot.querySelector('button')?.removeAttribute('aria-current');
+      });
 
-      // Add class to active dot
-      this.dots.children[activeIndex]?.querySelector('button')?.classList.add('active');
+      // Add active state to dot
+      this.dots.children[activeIndex]
+        ?.querySelector('button')
+        ?.classList.add('active');
+      this.dots.children[activeIndex]
+        ?.querySelector('button')
+        ?.setAttribute('aria-current', 'true');
     }
   }
 
@@ -1123,7 +1129,7 @@ export default class A11YSlider {
     // Only detects items in the visible viewport of the parent element
     everyElement(this.slides, slide => {
       const slideOffset = slide.offsetLeft < 0 ? 0 : slide.offsetLeft;
-      
+
       if (
         slideOffset >= sliderPosition &&
         slideOffset < sliderPosition + sliderWidth
@@ -1209,7 +1215,8 @@ export default class A11YSlider {
     // Update CSS
     this._setCSS();
 
-    if (this.options.adaptiveHeight === true) this._updateHeight(this.activeSlide);
+    if (this.options.adaptiveHeight === true)
+      this._updateHeight(this.activeSlide);
 
     // Dispatch custom event
     this._dispatchEvent('afterChange', {
