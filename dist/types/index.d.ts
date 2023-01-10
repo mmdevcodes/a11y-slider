@@ -73,6 +73,7 @@ export default class A11YSlider {
     swipeStartX: number;
     swipeX: number;
     swipeXCached: number;
+    statusEl: HTMLElement;
     constructor(element: HTMLElement, options?: Options);
     private _init;
     private _checkShouldEnable;
@@ -80,6 +81,9 @@ export default class A11YSlider {
     private _disableSlider;
     private _setCSS;
     private _removeCSS;
+    private _enableA11YStatus;
+    private _updateA11YStatus;
+    private _removeA11YStatus;
     private _checkResponsive;
     private _addSlidesWidth;
     private _removeSlidesWidth;
