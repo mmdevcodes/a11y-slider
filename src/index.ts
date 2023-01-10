@@ -109,6 +109,7 @@ export default class A11YSlider {
   public swipeStartX: number;
   public swipeX: number;
   public swipeXCached: number;
+  public statusEl: HTMLElement;
 
   constructor(element: HTMLElement, options?: Options) {
     // Enforce `element` parameter
@@ -150,6 +151,9 @@ export default class A11YSlider {
     this.swipeStartX = 0;
     this.swipeX = 0;
     this.swipeXCached = 0;
+    this.statusEl = createElement(
+      `<div class="a11y-slider-status" role="status">Displaying slide 1 of ${this.slides.length}</div>`
+    );
     this._hasCustomArrows =
       (options && options.prevArrow) || (options && options.nextArrow)
         ? true
@@ -356,6 +360,9 @@ export default class A11YSlider {
 
     // Add swipe event listeners
     if (this.options.swipe) this._enableSwipe();
+
+    // Add A11Y [role="status"] element
+    if (!this.options.autoplay) this._enableA11YStatus();
   }
 
   // Disable all functionality for the slider. Should mirror _enableSlider()
@@ -425,6 +432,9 @@ export default class A11YSlider {
 
     // Remove swipe functionality
     if (this.options.swipe) this._disableSwipe();
+
+    // Remove A11Y [role="status"] element
+    this._removeA11YStatus();
   }
 
   // Add all CSS needed for the slider. Should mirror _removeCSS()
@@ -475,6 +485,29 @@ export default class A11YSlider {
 
     // Remove all a11y functionality
     this._removeA11Y();
+  }
+
+  // Add [role="status"] element to the slider to announce slide changes
+  private _enableA11YStatus() {
+    this._updateA11YStatus();
+
+    this.slider.insertAdjacentElement('afterend', this.statusEl);
+  }
+
+  private _updateA11YStatus() {
+    let activeIndex = Array.prototype.indexOf.call(
+      this.activeSlide.parentNode && this.activeSlide.parentNode.children,
+      this.activeSlide
+    );
+
+    this.statusEl.textContent = `Displaying slide ${activeIndex + 1} of ${
+      this.slides.length
+    }`;
+  }
+
+  private _removeA11YStatus() {
+    this.statusEl.parentNode &&
+      this.statusEl.parentNode.removeChild(this.statusEl);
   }
 
   // Add event listeners for breakpoints
@@ -622,6 +655,9 @@ export default class A11YSlider {
         });
       }
     }
+
+    // This should not be mirrored in _removeA11Y()
+    this._updateA11YStatus();
   }
 
   // Reset all associated a11y functionality. Should mirror _updateA11Y()
@@ -953,6 +989,9 @@ export default class A11YSlider {
 
   private _toggleAutoplay(setState: AutoplaySwitch) {
     const startAutoplaying = () => {
+      // Make sure status is not being read for a11y users
+      this._removeA11YStatus();
+      
       // Start autoplaying
       this._autoplayTimer = window.setInterval(() => {
         this._goPrevOrNext(SlideDirection.Next);
@@ -969,6 +1008,9 @@ export default class A11YSlider {
     };
 
     const stopAutoplaying = () => {
+      // Make sure status is being read for a11y users
+      this._enableA11YStatus();
+      
       // Stop autoplaying
       window.clearInterval(this._autoplayTimer);
 
@@ -1215,8 +1257,9 @@ export default class A11YSlider {
     // Update CSS
     this._setCSS();
 
-    if (this.options.adaptiveHeight === true)
+    if (this.options.adaptiveHeight === true) {
       this._updateHeight(this.activeSlide);
+    }
 
     // Dispatch custom event
     this._dispatchEvent('afterChange', {

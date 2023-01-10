@@ -28,7 +28,8 @@
   box-sizing: inherit;
 }
 
-.a11y-slider-sr-only {
+.a11y-slider-sr-only,
+.a11y-slider-status {
   position: absolute;
   top: 0;
   left: 0;
