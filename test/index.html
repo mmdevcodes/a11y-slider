@@ -132,6 +132,10 @@
                 width: 100%;
             }
 
+            #s-3>*:nth-child(3) {
+                height: 400px;
+            }
+
             #s-4>* {
                 width: 33.333% !important;
             }
@@ -193,7 +197,7 @@
             <div>5</div>
         </li>
     </ul>
-    <h2>(Responsive enabled | 4 at 1280px)</h2>
+    <h2>(Responsive enabled | adaptiveHeight: true | 4 at 1280px)</h2>
     <ul id="s-3" class="slider">
         <li>
             <div>1</div>
@@ -297,6 +301,7 @@
             arrows: true, // arrows enabled 767px and down
             dots: false,
             autoplay: true,
+            adaptiveHeight: true,
             responsive: {
                 768: {
                     slidesToShow: 2,

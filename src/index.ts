@@ -346,7 +346,7 @@ export default class A11YSlider {
     // Adaptive height
     if (this.options.adaptiveHeight === true) {
       // Update slider's height based on content of slide
-      this._updateHeight(this.activeSlide);
+      this._updateHeight(this.visibleSlides);
 
       // Also add resize listener for it
       window.addEventListener('resize', this._updateHeightDebounced.bind(this));
@@ -991,7 +991,7 @@ export default class A11YSlider {
     const startAutoplaying = () => {
       // Make sure status is not being read for a11y users
       this._removeA11YStatus();
-      
+
       // Start autoplaying
       this._autoplayTimer = window.setInterval(() => {
         this._goPrevOrNext(SlideDirection.Next);
@@ -1010,7 +1010,7 @@ export default class A11YSlider {
     const stopAutoplaying = () => {
       // Make sure status is being read for a11y users
       this._enableA11YStatus();
-      
+
       // Stop autoplaying
       window.clearInterval(this._autoplayTimer);
 
@@ -1089,7 +1089,7 @@ export default class A11YSlider {
     });
 
     // Update slider's height based on content of slide
-    if (this.options.adaptiveHeight === true) this._updateHeight(targetSlide);
+    if (this.options.adaptiveHeight === true) this._updateHeight(this.visibleSlides);
 
     // Move slider to specific item
     if (this.modernBrowser) {
@@ -1128,21 +1128,31 @@ export default class A11YSlider {
   }
 
   /**
-   * If element is passed slider's height will match
-   *  it otherwise the height of the slider is removed.
+   * Updates height of slider based on tallest element passed in array, or false to reset
    */
-  private _updateHeight(target: HTMLElement | false) {
-    if (target instanceof HTMLElement) {
-      const targetHeight = getSubpixelStyle(target, 'height');
-      this.slider.style.height = `${targetHeight}px`;
-    } else {
+  private _updateHeight(targets: HTMLElement | HTMLElement[] | false) {
+    if (targets === false) {
       this.slider.style.height = '';
+    } else {
+      const currentHeight = getSubpixelStyle(this.slider, 'height');
+      let tallestHeight = 0;
+
+      everyElement(targets, (target: HTMLElement) => {
+        const targetHeight = getSubpixelStyle(target, 'height');
+        console.log(currentHeight, targetHeight, target);
+
+        if (targetHeight > tallestHeight) tallestHeight = targetHeight;
+      });
+
+      if (currentHeight !== tallestHeight) {
+        this.slider.style.height = `${tallestHeight}px`;
+      }
     }
   }
 
   /** Manully update height of slider (based off adaptiveHeight option) */
   public refreshHeight() {
-    this._updateHeight(this.activeSlide);
+    this._updateHeight(this.visibleSlides);
   }
 
   private _getActiveAndVisible(
@@ -1258,7 +1268,7 @@ export default class A11YSlider {
     this._setCSS();
 
     if (this.options.adaptiveHeight === true) {
-      this._updateHeight(this.activeSlide);
+      this._updateHeight(this.visibleSlides);
     }
 
     // Dispatch custom event
