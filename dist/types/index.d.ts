@@ -116,8 +116,7 @@ export default class A11YSlider {
      */
     updateOptions(options: Options): void;
     /**
-     * If element is passed slider's height will match
-     *  it otherwise the height of the slider is removed.
+     * Updates height of slider based on tallest element passed in array, or false to reset
      */
     private _updateHeight;
     /** Manully update height of slider (based off adaptiveHeight option) */
