@@ -1139,8 +1139,7 @@ export default class A11YSlider {
 
       everyElement(targets, (target: HTMLElement) => {
         const targetHeight = getSubpixelStyle(target, 'height');
-        console.log(currentHeight, targetHeight, target);
-
+        
         if (targetHeight > tallestHeight) tallestHeight = targetHeight;
       });
 
