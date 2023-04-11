@@ -1143,7 +1143,7 @@ export default class A11YSlider {
         if (targetHeight > tallestHeight) tallestHeight = targetHeight;
       });
 
-      if (currentHeight !== tallestHeight) {
+      if (currentHeight !== tallestHeight && tallestHeight !== 0) {
         this.slider.style.height = `${tallestHeight}px`;
       }
     }
