@@ -67,5 +67,7 @@
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "i18next": "^23.5.1"
+  }
 }
