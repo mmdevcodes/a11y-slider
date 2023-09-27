@@ -12,6 +12,7 @@ import {
   isPlatformiOS
 } from './utils';
 import './index.css';
+import i18n from './i18n.config';
 
 enum SlideDirection {
   Prev,
@@ -135,7 +136,7 @@ export default class A11YSlider {
       'a, area, input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]';
     this._autoplayTimer = IsAutoplaying.No;
     this.autoplayBtn = createElement(
-      `<button type="button" class="a11y-slider-autoplay">Toggle slider autoplay</button>`
+      `<button type="button" class="a11y-slider-autoplay">${i18n.t("toggleAutoplay")}</button>`
     );
     this._pauseOnMouseLeave = false;
     this._skipBtns = [];
@@ -152,7 +153,7 @@ export default class A11YSlider {
     this.swipeX = 0;
     this.swipeXCached = 0;
     this.statusEl = createElement(
-      `<div class="a11y-slider-status" role="status">Displaying slide 1 of ${this.slides.length}</div>`
+      `<div class="a11y-slider-status" role="status">${i18n.t("displaySlideStatus", {context: "first", count: this.slides.length})}</div>`
     );
     this._hasCustomArrows =
       (options && options.prevArrow) || (options && options.nextArrow)
@@ -164,12 +165,12 @@ export default class A11YSlider {
       prevArrow:
         (options && options.prevArrow) ||
         createElement(
-          '<button type="button" class="a11y-slider-prev">Previous slide</button>'
+          `<button type="button" class="a11y-slider-prev">${i18n.t("previousSlide")}</button>`
         ),
       nextArrow:
         (options && options.nextArrow) ||
         createElement(
-          '<button type="button" class="a11y-slider-next">Next slide</button>'
+          `<button type="button" class="a11y-slider-next">${i18n.t("nextSlide")}</button>`
         ),
       dots: true,
       adaptiveHeight: false,
@@ -500,9 +501,10 @@ export default class A11YSlider {
       this.activeSlide
     );
 
-    this.statusEl.textContent = `Displaying slide ${activeIndex + 1} of ${
-      this.slides.length
-    }`;
+    this.statusEl.textContent = i18n.t('displaySlideStatus', {
+      count: activeIndex + 1,
+      totalSlides: this.slides.length
+    });
   }
 
   private _removeA11YStatus() {
@@ -686,10 +688,10 @@ export default class A11YSlider {
 
   private _addSkipBtn() {
     const beforeEl = createElement(
-      `<button class="a11y-slider-sr-only" type="button" tabindex="0">Click to skip slider carousel</button>`
+      `<button class="a11y-slider-sr-only" type="button" tabindex="0">${i18n.t("skipSliderForScreenreader")}</button>`
     );
     const afterEl = createElement(
-      `<div class="a11y-slider-sr-only" tabindex="-1">End of slider carousel</div>`
+      `<div class="a11y-slider-sr-only" tabindex="-1">${i18n.t("endOfSlider")}</div>`
     );
 
     // Event handler to go to end
@@ -749,7 +751,8 @@ export default class A11YSlider {
         dotBtn = createElement(this.options.customPaging(i, this));
       } else {
         dotBtn = createElement('<button type="button"></button>');
-        dotBtn.textContent = `Move slider to item #${i + 1}`;
+        dotBtn.textContent = i18n.t('moveSliderToItem', {
+          count: i + 1});
       }
 
       // Event handlers to switch to slide
@@ -1078,7 +1081,7 @@ export default class A11YSlider {
     } else if (target instanceof HTMLElement) {
       targetSlide = target;
     } else {
-      throw new Error('scrollToSlide only accepts an HTMLElement or number');
+      throw new Error(i18n.t('onlyHTMLElementOrNumber'));
     }
 
     // Dispatch custom event
